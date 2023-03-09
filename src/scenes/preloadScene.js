@@ -3,6 +3,12 @@ import bgNight from '../assets/bg/bg_night.png';
 import bgInterior from '../assets/bg/bg-interior.png';
 import player from '../assets/sprites/BearSprites.png';
 import playBtn from '../assets/buttons/play-btn.png';
+import coinsInv from '../assets/inventory/coins-inventory.png';
+import heartInv from '../assets/inventory/heart-inventory.png';
+import moneyInv from '../assets/inventory/money-inventory.png';
+import coinsPu from '../assets/pickups/coins-pickup.png';
+import heartPu from '../assets/pickups/heart-pickup.png';
+import moneyPu from '../assets/pickups/money-pickup.png';
 import inventoryUI from '../assets/ui/inventory-ui.png';
 import title from '../assets/ui/title.png';
 
@@ -19,6 +25,16 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.image('playBtn', playBtn);
         this.load.image('inventoryUI', inventoryUI);
         this.load.image('title', title);
+
+        // inventory
+        this.load.image('coinsInv', coinsInv);
+        this.load.image('heartInv', heartInv);
+        this.load.image('moneyInv', moneyInv);
+
+        // pickups
+        this.load.image('coinsPu', coinsPu);
+        this.load.image('heartPu', heartPu);
+        this.load.image('moneyPu', moneyPu);
     }
       
     create () {
