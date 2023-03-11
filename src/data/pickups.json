@@ -1,0 +1,71 @@
+{
+	"coins": {
+		"pickup": {
+			"question": "A bunch of coins made of copper. Pick it up?",
+            "choices": [
+                {
+                    "answer": "Yes",
+                    "action": "addToInventory",
+                    "count": 1,
+                    "nextTopic": "pickupResultYes"
+                },
+                {
+                    "answer": "No",
+                    "nextTopic": "pickupResultNo"
+                }
+            ]
+		},
+        "pickupResultYes": {
+			"statement": "Got it!"
+        },
+        "pickupResultNo": {
+			"statement": "Nah, not interested."
+        }
+	},
+    "heart": {
+		"pickup": {
+			"question": "A lonely heart. Pick it up?",
+            "choices": [
+                {
+                    "answer": "Yes",
+                    "action": "addToInventory",
+                    "count": 1,
+                    "nextTopic": "pickupResultYes"
+                },
+                {
+                    "answer": "No",
+                    "nextTopic": "pickupResultNo"
+                }
+            ]
+		},
+        "pickupResultYes": {
+			"statement": "Got it!"
+        },
+        "pickupResultNo": {
+			"statement": "Nah, not interested."
+        }
+	},
+    "money": {
+		"pickup": {
+			"question": "A stack of cash. Pick it up?",
+            "choices": [
+                {
+                    "answer": "Yes",
+                    "action": "addToInventory",
+                    "count": 1,
+                    "nextTopic": "pickupResultYes"
+                },
+                {
+                    "answer": "No",
+                    "nextTopic": "pickupResultNo"
+                }
+            ]
+		},
+        "pickupResultYes": {
+			"statement": "Got it!"
+        },
+        "pickupResultNo": {
+			"statement": "Nah, not interested."
+        }
+	}
+}

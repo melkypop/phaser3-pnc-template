@@ -95,6 +95,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
                 that.y = pointerY;
                 that.currentState = 'INIT';
                 that.stop();
+                that.emit('WALK_COMPLETE', that);
             }
         });
     }

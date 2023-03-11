@@ -20,6 +20,11 @@ let heartPu = null;
 let moneyPu = null;
 
 let pickups = [];
+let currentPickup = null;
+let pickupsData = null;
+
+let currentQuestionStatement = null;
+let currentChoices = [];
 
 let menuOpened = false;
 
@@ -43,7 +48,11 @@ export default class GameExteriorScene extends Phaser.Scene {
 
       this.initInventoryTween();
 
-      this.initCollisions(pickups);
+      pickupsData = this.cache.json.get('pickupsData');
+
+      // this.initCollisions(pickups);
+
+      this.initPickupsInteraction(pickups);
     }
 
     initInventoryTween () {
@@ -153,11 +162,35 @@ export default class GameExteriorScene extends Phaser.Scene {
       ];
     }
 
+    initPickupsInteraction (items) {
+      let that = this;
+
+      bg.setInteractive().on('pointerdown', (pointer, localX, localY, event) => {
+        currentPickup = null;
+      }, that);
+
+      items.forEach(item => {
+        item.pickup.setInteractive().on('pointerdown', (pointer, localX, localY, event) => {
+            currentPickup = item.name;
+        }, that);
+      });
+    }
+
     initPlayer () {
+      let that = this;
+
       player = new Player(this, 600, 500);
       player.setScale(2);
       this.physics.add.existing(player);
       this.add.existing(player);
+
+      player.on('WALK_COMPLETE', (player) => {
+        if (player.currentState === 'INIT') {
+          if (currentPickup) {
+            that.getDialogData(currentPickup, 'pickup');
+          }
+        }
+      }, this);
 
       this.input.on('pointerdown', (pointer) => {
         if (menuOpened) {
@@ -167,6 +200,35 @@ export default class GameExteriorScene extends Phaser.Scene {
         player.walk(pointer);
       }, this);
     }
+
+    getDialogData(topic, topicNode) {
+      let node = pickupsData && pickupsData[topic] && pickupsData[topic][topicNode] ? pickupsData[topic][topicNode] : null;
+
+      currentChoices.length = 0;
+
+      if (node) {
+        console.log('node = ' , node)
+        if (node.question) {
+          console.log('question = ' , node.question)
+          currentQuestionStatement = node.question;
+
+          if (node.choices && node.choices.length) {
+            for (let i = 0; i < node.choices.length; i++) {
+              if (node.choices[i] && node.choices[i].answer) {
+                console.log('choice = ' , node.choices[i].answer);
+
+                currentChoices.push(node.choices[i]);
+              }
+            }
+          }
+        } else {
+          if (node.statement) {
+            console.log('statement = ' , node.statement);
+            currentQuestionStatement = node.statement;
+          }
+        }
+      }
+   }
 
     initCollisions (items) {
       items.forEach(item => {
