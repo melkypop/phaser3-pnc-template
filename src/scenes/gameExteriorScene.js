@@ -19,17 +19,22 @@ let coinsPu = null;
 let heartPu = null;
 let moneyPu = null;
 
-let pickups = [];
+let pickupsMap = {};
 let currentPickup = null;
 let pickupsData = null;
 
 let currentQuestionStatement = null;
 let currentChoices = [];
+
+let questionStatement = null;
 let questionStatementTF = null;
 let choiceTFs = [];
 let choiceButtons = [];
 
+let currentTopic = null;
+
 let dialogContainer = null;
+let dialogType = null;
 
 let menuOpened = false;
 
@@ -55,9 +60,7 @@ export default class GameExteriorScene extends Phaser.Scene {
 
     pickupsData = this.cache.json.get('pickupsData');
 
-    // this.initCollisions(pickups);
-
-    this.initPickupsInteraction(pickups);
+    this.initPickupsInteraction(Object.keys(pickupsMap));
 
     this.initPlayerDialogUI();
 
@@ -66,6 +69,7 @@ export default class GameExteriorScene extends Phaser.Scene {
         dialogContainer.setVisible(false);
         menuOpened = false;
         currentPickup = null;
+        this.clearDialog();
       }
     });
   }
@@ -161,20 +165,11 @@ export default class GameExteriorScene extends Phaser.Scene {
     moneyPu = this.add.image(800, 500, 'moneyPu');
     moneyPu.setOrigin(0, 0);
 
-    pickups = [
-      {
-        'name': 'coins',
-        'pickup': coinsPu
-      },
-      {
-        'name': 'heart',
-        'pickup': heartPu
-      },
-      {
-        'name': 'money',
-        'pickup': moneyPu
-      }
-    ];
+    pickupsMap = {
+      'coins': coinsPu,
+      'heart': heartPu,
+      'money': moneyPu
+    };
   }
 
   initPickupsInteraction (items) {
@@ -185,8 +180,8 @@ export default class GameExteriorScene extends Phaser.Scene {
     }, that);
 
     items.forEach(item => {
-      item.pickup.setInteractive().on('pointerdown', (pointer, localX, localY, event) => {
-          currentPickup = item.name;
+      pickupsMap[item].setInteractive().on('pointerdown', (pointer, localX, localY, event) => {
+          currentPickup = item;
       }, that);
     });
   }
@@ -202,7 +197,11 @@ export default class GameExteriorScene extends Phaser.Scene {
     player.on('WALK_COMPLETE', (player) => {
       if (player.currentState === 'INIT') {
         if (currentPickup) {
-          that.getDialogData(currentPickup, 'pickup');
+          dialogType = 'pickup';
+
+          currentTopic = dialogType;
+
+          that.getDialogData(currentPickup, dialogType);
 
           that.displayDialog(currentQuestionStatement, currentChoices);
 
@@ -230,23 +229,18 @@ export default class GameExteriorScene extends Phaser.Scene {
     currentChoices.length = 0;
 
     if (node) {
-      console.log('node = ' , node)
       if (node.question) {
-        console.log('question = ' , node.question)
-        currentQuestionStatement = node.question;
+        currentQuestionStatement = node.question || node.statement || '';
 
         if (node.choices && node.choices.length) {
           for (let i = 0; i < node.choices.length; i++) {
             if (node.choices[i] && node.choices[i].answer) {
-              console.log('choice = ' , node.choices[i].answer);
-
               currentChoices.push(node.choices[i]);
             }
           }
         }
       } else {
         if (node.statement) {
-          console.log('statement = ' , node.statement);
           currentQuestionStatement = node.statement;
         }
       }
@@ -254,13 +248,57 @@ export default class GameExteriorScene extends Phaser.Scene {
   }
 
   displayDialog (currQuestionStatement, currChoices) {
+    if (!currQuestionStatement) {
+      this.clearDialog();
+      this.hideDialog();
+      this.hideDialogButtons();
+      menuOpened = false;
+      return;
+    }
+
+    this.showDialog();
+
     questionStatementTF.setText(currQuestionStatement);
+
+    if (!Array.isArray(currChoices) || (Array.isArray(currChoices) && currChoices.length === 0)) {
+      this.hideDialogButtons();
+
+      setTimeout(() => {
+        this.clearDialog();
+        this.hideDialog();
+        menuOpened = false;
+      }, 1000);
+
+      return;
+    }
+
+    this.showDialogButtons();
 
     currChoices.forEach((choice, idx) => {
       if (choiceTFs[idx] && choice.answer) {
         choiceTFs[idx].setText(choice.answer);
       }
     });
+  }
+
+  showDialogButtons () {
+    choiceButtons.forEach(btn => {
+      btn.setVisible(true);
+    });
+  }
+
+  hideDialogButtons () {
+    choiceButtons.forEach(btn => {
+      btn.setVisible(false);
+    });
+  }
+
+  showDialog () {
+    questionStatement.setVisible(true);
+  }
+
+  hideDialog () {
+    questionStatement.setVisible(false);
   }
 
   clearDialog () {
@@ -273,99 +311,105 @@ export default class GameExteriorScene extends Phaser.Scene {
     });
   }
 
-  initPlayerDialogUI () {
-    // question / statement
-    let questionStatement = new Phaser.GameObjects.Rectangle(this, -100, -95, 200, 60, 0xffffff, 1);
-    this.add.existing(questionStatement).setOrigin(0, 0);
+  setNextDialog (data, currNode, currTopic) {
+    this.clearDialog();
 
-    questionStatementTF = this.add.text(questionStatement.x + 5, questionStatement.y + 5, 'Test', {
+    if (data && data[currNode] && data[currNode][currTopic]) {
+      this.getDialogData(currNode, currTopic);
+
+      this.displayDialog(currentQuestionStatement, currentChoices);
+    }
+  }
+
+  initPlayerDialogUI () {
+    let that = this;
+
+    // question / statement
+    questionStatement = this.add.graphics();
+    questionStatement.lineStyle(3, 0x483c32, 1);
+    questionStatement.fillStyle(0xFFFFFF, 1);
+    questionStatement.fillRoundedRect(-100, -95, 200, 60, 20);
+    questionStatement.strokeRoundedRect(-100, -95, 200, 60, 20);
+
+    questionStatementTF = this.add.text(-90, -90, 'Test', {
       font: "16px Courier New",
-      fill: "#000000",
+      fill: "#483c32",
       align: "left",
-      wordWrap: { width: 195 }
+      wordWrap: { width: 190 }
     });
 
     // choice buttons
-    let choiceBtn1 = new Phaser.GameObjects.Rectangle(this, 105, -95, 100, 25, 0xffffff, 1);
-    this.add.existing(choiceBtn1).setOrigin(0, 0).setInteractive({ cursor: 'pointer' });
-    choiceBtn1.on('pointerdown', () => {
-        // choose choice 1
-        console.log('clicked button 1')
+    let choiceBtn1 = this.add.graphics();
+    choiceBtn1.lineStyle(3, 0x483c32, 1);
+    choiceBtn1.fillStyle(0xFFFFFF, 1);
+    choiceBtn1.fillRoundedRect(105, -95, 100, 25, 10);
+    choiceBtn1.strokeRoundedRect(105, -95, 100, 25, 10);
+    choiceBtn1.setInteractive(new Phaser.Geom.Rectangle(105, -95, 100, 25), Phaser.Geom.Rectangle.Contains);
 
-        dialogContainer.setVisible(false);
-        currentPickup = null;
+    choiceButtons.push(choiceBtn1);
 
-        setTimeout(() => {
-          menuOpened = false;
-        }, 500);
-    });
-    choiceBtn1.on('pointerover', function (event, gameObjects) {
-      // tint
-    });
-    choiceBtn1.on('pointerout', function (event, gameObjects) {
-      // clear tint
-    });
-
-    let choiceTF1 = this.add.text(choiceBtn1.x + 5, choiceBtn1.y + 5, 'Y', {
+    let choiceTF1 = this.add.text(110, -90, 'Y', {
       font: "16px Courier New",
-      fill: "#000000",
+      fill: "#483c32",
       align: "left",
-      wordWrap: { width: 195 }
+      wordWrap: { width: 90 }
     });
 
     choiceTFs.push(choiceTF1);
-
-    let choiceBtn2 = new Phaser.GameObjects.Rectangle(this, 105, -65, 100, 25, 0xffffff, 1);
-    this.add.existing(choiceBtn2).setOrigin(0, 0).setInteractive({ cursor: 'pointer' });
-    choiceBtn2.on('pointerdown', () => {
-        // choose choice 2
-        console.log('clicked button 2')
-
-        dialogContainer.setVisible(false);
-        currentPickup = null;
-
-        setTimeout(() => {
-          menuOpened = false;
-        }, 500);
+    
+    choiceBtn1.on('pointerdown', () => {
+      that.chooseChoice(0);
     });
-    choiceBtn2.on('pointerover', function (event, gameObjects) {
-        // tint
+    choiceBtn1.on('pointerover', (event, gameObjects) => {
+      choiceTF1.setFill(0xfa8b66);
     });
-    choiceBtn2.on('pointerout', function (event, gameObjects) {
-        // clear tint
+    choiceBtn1.on('pointerout', (event, gameObjects) => {
+      choiceTF1.setFill(0x483c32);
     });
 
-    let choiceTF2 = this.add.text(choiceBtn2.x + 5, choiceBtn2.y + 5, 'N', {
+    let choiceBtn2 = this.add.graphics();
+    choiceBtn2.lineStyle(3, 0x483c32, 1);
+    choiceBtn2.fillStyle(0xFFFFFF, 1);
+    choiceBtn2.fillRoundedRect(105, -65, 100, 25, 10);
+    choiceBtn2.strokeRoundedRect(105, -65, 100, 25, 10);
+    choiceBtn2.setInteractive(new Phaser.Geom.Rectangle(105, -65, 100, 25), Phaser.Geom.Rectangle.Contains);
+
+    choiceButtons.push(choiceBtn2);
+    
+    let choiceTF2 = this.add.text(110, -60, 'N', {
       font: "16px Courier New",
-      fill: "#000000",
+      fill: "#483c32",
       align: "left",
-      wordWrap: { width: 195 }
+      wordWrap: { width: 90 }
     });
 
     choiceTFs.push(choiceTF2);
+    
+    choiceBtn2.on('pointerdown', () => {
+      that.chooseChoice(1);
+    });
+    choiceBtn2.on('pointerover', (event, gameObjects) => {
+      choiceTF2.setFill(0xfa8b66);
+    });
+    choiceBtn2.on('pointerout', (event, gameObjects) => {
+      choiceTF1.setFill(0x483c32);
+    });
 
     dialogContainer = this.add.container(0, 0, [questionStatement, choiceBtn1, choiceBtn2, questionStatementTF, ...choiceTFs]);
     dialogContainer.setVisible(false);
   }
 
-  initCollisions (items) {
-    items.forEach(item => {
-      const pickup = item.pickup;
-      const pickupName = item.name;
-      const hitObj = this.physics.add.sprite(pickup.x, pickup.y, null, null).setVisible(false).setActive(true).setOrigin(0, 0);
+  chooseChoice (num) {
+    if (currentChoices[num]) {
+      currentTopic = currentChoices[num].nextTopic;
 
-      hitObj.body.setOffset(10, 10);
-      hitObj.body.width = pickup.width;
-      hitObj.body.height = pickup.height;
+      if (dialogType === 'pickup' && currentTopic === 'pickupResultYes') {
+        inventory.addItem(currentPickup);
+        pickupsMap[currentPickup].setVisible(false);
+      }
 
-      hitObj.body.setBounce(0).setImmovable(true);
-      this.physics.add.overlap(player, hitObj, (player, hitObj) => {
-        hitObj.destroy();
-        pickup.setVisible(false);
-
-        inventory.addItem(pickupName);
-      }, null, this);
-    });
+      this.setNextDialog(pickupsData, currentPickup, currentTopic);
+    }
   }
 
   update () {
