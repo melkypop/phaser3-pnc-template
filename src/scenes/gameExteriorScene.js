@@ -1,5 +1,6 @@
 import Player from '../player.js';
 import Inventory from '../inventory.js';
+import Dialog from '../dialog.js';
 
 const bgMoveAmount = 1;
 const bgLeftLimit = -320;
@@ -23,24 +24,15 @@ let pickupsMap = {};
 let currentPickup = null;
 let pickupsData = null;
 
-let currentQuestionStatement = null;
-let currentChoices = [];
-
-let questionStatement = null;
-let questionStatementTF = null;
-let choiceTFs = [];
-let choiceButtons = [];
-
-let currentTopic = null;
-
-let dialogContainer = null;
+// dialog
 let dialogType = null;
-
-let menuOpened = false;
+let dialog = null;
 
 export default class GameExteriorScene extends Phaser.Scene {
   constructor () {
       super('GameExteriorScene');
+
+      this.menuOpened = false;
   }
 
   create () {
@@ -58,18 +50,19 @@ export default class GameExteriorScene extends Phaser.Scene {
 
     this.initInventoryTween();
 
-    pickupsData = this.cache.json.get('pickupsData');
-
     this.initPickupsInteraction(Object.keys(pickupsMap));
 
-    this.initPlayerDialogUI();
+    dialog = new Dialog(this, 0, 0, []);
+    pickupsData = this.cache.json.get('pickupsData');
+    dialog.setPickupsData(pickupsData);
+    dialog.initPlayerDialogUI();
 
     this.input.keyboard.on('keyup-ESC', event => {
-      if (menuOpened) {
-        dialogContainer.setVisible(false);
-        menuOpened = false;
+      if (this.menuOpened) {
+        dialog.setVisible(false);
+        this.menuOpened = false;
         currentPickup = null;
-        this.clearDialog();
+        dialog.clearDialog();
       }
     });
   }
@@ -80,7 +73,7 @@ export default class GameExteriorScene extends Phaser.Scene {
     let inventoryItems = inventory.getInventoryItems();
 
     inventoryUI.on('pointerover', (pointer) => {
-      if (menuOpened) {
+      if (this.menuOpened) {
           return;
       }
 
@@ -94,7 +87,7 @@ export default class GameExteriorScene extends Phaser.Scene {
           },
           onComplete: () => {
             inventoryUI.y = -30;
-            menuOpened = true;
+            this.menuOpened = true;
           }
       });
 
@@ -118,8 +111,8 @@ export default class GameExteriorScene extends Phaser.Scene {
     }, this);
 
     inventoryUI.on('pointerout', (pointer) => {
-        if (!menuOpened) {
-            return;
+        if (!this.menuOpened) {
+          return;
         }
 
         let tween = that.tweens.add({
@@ -132,7 +125,7 @@ export default class GameExteriorScene extends Phaser.Scene {
           },
           onComplete: () => {
             inventoryUI.y = 0;
-            menuOpened = false;
+            this.menuOpened = false;
           }
         });
 
@@ -199,23 +192,19 @@ export default class GameExteriorScene extends Phaser.Scene {
         if (currentPickup) {
           dialogType = 'pickup';
 
-          currentTopic = dialogType;
+          // currentTopic = dialogType;
 
-          that.getDialogData(currentPickup, dialogType);
+          let { currentQuestionStatement, currentChoices } = dialog.getDialogData(currentPickup, dialogType);
 
-          that.displayDialog(currentQuestionStatement, currentChoices);
+          dialog.displayDialog(currentQuestionStatement, currentChoices, player.x, player.y);
 
-          dialogContainer.x = player.x;
-          dialogContainer.y = player.y;
-          dialogContainer.setVisible(true);
-
-          menuOpened = true;
+          this.menuOpened = true;
         }
       }
     }, this);
 
     this.input.on('pointerdown', (pointer) => {
-      if (menuOpened) {
+      if (this.menuOpened) {
         return;
       }
 
@@ -223,193 +212,13 @@ export default class GameExteriorScene extends Phaser.Scene {
     }, this);
   }
 
-  getDialogData(topic, topicNode) {
-    let node = pickupsData && pickupsData[topic] && pickupsData[topic][topicNode] ? pickupsData[topic][topicNode] : null;
-
-    currentChoices.length = 0;
-
-    if (node) {
-      if (node.question) {
-        currentQuestionStatement = node.question || node.statement || '';
-
-        if (node.choices && node.choices.length) {
-          for (let i = 0; i < node.choices.length; i++) {
-            if (node.choices[i] && node.choices[i].answer) {
-              currentChoices.push(node.choices[i]);
-            }
-          }
-        }
-      } else {
-        if (node.statement) {
-          currentQuestionStatement = node.statement;
-        }
-      }
-    }
+  getCurrentPickup () {
+    return currentPickup;
   }
 
-  displayDialog (currQuestionStatement, currChoices) {
-    if (!currQuestionStatement) {
-      this.clearDialog();
-      this.hideDialog();
-      this.hideDialogButtons();
-      menuOpened = false;
-      return;
-    }
-
-    this.showDialog();
-
-    questionStatementTF.setText(currQuestionStatement);
-
-    if (!Array.isArray(currChoices) || (Array.isArray(currChoices) && currChoices.length === 0)) {
-      this.hideDialogButtons();
-
-      setTimeout(() => {
-        this.clearDialog();
-        this.hideDialog();
-        menuOpened = false;
-      }, 1000);
-
-      return;
-    }
-
-    this.showDialogButtons();
-
-    currChoices.forEach((choice, idx) => {
-      if (choiceTFs[idx] && choice.answer) {
-        choiceTFs[idx].setText(choice.answer);
-      }
-    });
-  }
-
-  showDialogButtons () {
-    choiceButtons.forEach(btn => {
-      btn.setVisible(true);
-    });
-  }
-
-  hideDialogButtons () {
-    choiceButtons.forEach(btn => {
-      btn.setVisible(false);
-    });
-  }
-
-  showDialog () {
-    questionStatement.setVisible(true);
-  }
-
-  hideDialog () {
-    questionStatement.setVisible(false);
-  }
-
-  clearDialog () {
-    questionStatementTF.setText('');
-
-    choiceTFs.forEach((choice) => {
-      if (choice) {
-        choice.setText('');
-      }
-    });
-  }
-
-  setNextDialog (data, currNode, currTopic) {
-    this.clearDialog();
-
-    if (data && data[currNode] && data[currNode][currTopic]) {
-      this.getDialogData(currNode, currTopic);
-
-      this.displayDialog(currentQuestionStatement, currentChoices);
-    }
-  }
-
-  initPlayerDialogUI () {
-    let that = this;
-
-    // question / statement
-    questionStatement = this.add.graphics();
-    questionStatement.lineStyle(3, 0x483c32, 1);
-    questionStatement.fillStyle(0xFFFFFF, 1);
-    questionStatement.fillRoundedRect(-100, -95, 200, 60, 20);
-    questionStatement.strokeRoundedRect(-100, -95, 200, 60, 20);
-
-    questionStatementTF = this.add.text(-90, -90, 'Test', {
-      font: "16px Courier New",
-      fill: "#483c32",
-      align: "left",
-      wordWrap: { width: 190 }
-    });
-
-    // choice buttons
-    let choiceBtn1 = this.add.graphics();
-    choiceBtn1.lineStyle(3, 0x483c32, 1);
-    choiceBtn1.fillStyle(0xFFFFFF, 1);
-    choiceBtn1.fillRoundedRect(105, -95, 100, 25, 10);
-    choiceBtn1.strokeRoundedRect(105, -95, 100, 25, 10);
-    choiceBtn1.setInteractive(new Phaser.Geom.Rectangle(105, -95, 100, 25), Phaser.Geom.Rectangle.Contains);
-
-    choiceButtons.push(choiceBtn1);
-
-    let choiceTF1 = this.add.text(110, -90, 'Y', {
-      font: "16px Courier New",
-      fill: "#483c32",
-      align: "left",
-      wordWrap: { width: 90 }
-    });
-
-    choiceTFs.push(choiceTF1);
-    
-    choiceBtn1.on('pointerdown', () => {
-      that.chooseChoice(0);
-    });
-    choiceBtn1.on('pointerover', (event, gameObjects) => {
-      choiceTF1.setFill(0xfa8b66);
-    });
-    choiceBtn1.on('pointerout', (event, gameObjects) => {
-      choiceTF1.setFill(0x483c32);
-    });
-
-    let choiceBtn2 = this.add.graphics();
-    choiceBtn2.lineStyle(3, 0x483c32, 1);
-    choiceBtn2.fillStyle(0xFFFFFF, 1);
-    choiceBtn2.fillRoundedRect(105, -65, 100, 25, 10);
-    choiceBtn2.strokeRoundedRect(105, -65, 100, 25, 10);
-    choiceBtn2.setInteractive(new Phaser.Geom.Rectangle(105, -65, 100, 25), Phaser.Geom.Rectangle.Contains);
-
-    choiceButtons.push(choiceBtn2);
-    
-    let choiceTF2 = this.add.text(110, -60, 'N', {
-      font: "16px Courier New",
-      fill: "#483c32",
-      align: "left",
-      wordWrap: { width: 90 }
-    });
-
-    choiceTFs.push(choiceTF2);
-    
-    choiceBtn2.on('pointerdown', () => {
-      that.chooseChoice(1);
-    });
-    choiceBtn2.on('pointerover', (event, gameObjects) => {
-      choiceTF2.setFill(0xfa8b66);
-    });
-    choiceBtn2.on('pointerout', (event, gameObjects) => {
-      choiceTF1.setFill(0x483c32);
-    });
-
-    dialogContainer = this.add.container(0, 0, [questionStatement, choiceBtn1, choiceBtn2, questionStatementTF, ...choiceTFs]);
-    dialogContainer.setVisible(false);
-  }
-
-  chooseChoice (num) {
-    if (currentChoices[num]) {
-      currentTopic = currentChoices[num].nextTopic;
-
-      if (dialogType === 'pickup' && currentTopic === 'pickupResultYes') {
-        inventory.addItem(currentPickup);
-        pickupsMap[currentPickup].setVisible(false);
-      }
-
-      this.setNextDialog(pickupsData, currentPickup, currentTopic);
-    }
+  addToInventory (pickup) {
+    inventory.addItem(pickup);
+    pickupsMap[pickup].setVisible(false);
   }
 
   update () {
