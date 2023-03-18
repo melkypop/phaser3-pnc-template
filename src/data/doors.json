@@ -1,0 +1,23 @@
+{
+	"cafe": {
+		"door": {
+			"question": "Cafe open! Enter?",
+            "choices": [
+                {
+                    "answer": "Yes",
+                    "nextTopic": "doorResultYes"
+                },
+                {
+                    "answer": "No",
+                    "nextTopic": "doorResultNo"
+                }
+            ]
+		},
+        "doorResultYes": {
+			"statement": "Alright!"
+        },
+        "doorResultNo": {
+			"statement": "Nah, not interested."
+        }
+	}
+}

@@ -2,75 +2,54 @@ import Player from '../player.js';
 import Inventory from '../inventory.js';
 import Dialog from '../dialog.js';
 
-const bgMoveAmount = 1;
-const bgLeftLimit = -320;
-const playerLeftLimit = 110;
-const playerRightLimit = 850;
-
 const walkableArea = {
-  minX: 60,
-  maxX: 900,
-  minY: 480,
-  maxY: 530
+  minX: 180,
+  maxX: 770,
+  minY: 370,
+  maxY: 510
 };
-
-let worldContainer = null; // items to be moved for parallax
 
 let bg = null;
 let player = null;
 
 // inventory
 let inventory = null;
-
-// pickups
-let coinsPu = null;
-let heartPu = null;
-let moneyPu = null;
+let inventoryData = null;
 
 let pickupsMap = {};
 let currentPickup = null;
 let pickupsData = null;
 
 // dialog
-let dialogSubTopic = null;
+let dialogType = null;
 let dialog = null;
 
-// door
-let door = null;
-let currentDoor = null;
-let doorsData = null;
-
-export default class GameExteriorScene extends Phaser.Scene {
+export default class GameInteriorScene extends Phaser.Scene {
   constructor () {
-      super('GameExteriorScene');
+      super('GameInteriorScene');
 
       this.menuOpened = false;
   }
 
   init (data) {
     if (data) {
-        inventory = data.inventory;
+        inventoryData = data.inventory;
         player = data.player;
         dialog = data.dialog;
     }
   }
 
   create () {
-    bg = this.add.image(0, 0, 'bg');
+    bg = this.add.image(0, 0, 'bgInterior');
     bg.setOrigin(0, 0);
 
     this.initPickups();
 
-    let doorRect = new Phaser.Geom.Rectangle(800, 320, 80, 170);
-    door = this.add.graphics({ fillStyle: { color: 0x0000ff, alpha: 0 } });
-    door.fillRectShape(doorRect);
-    door.setInteractive(doorRect, Phaser.Geom.Rectangle.Contains);
-
-    worldContainer = this.add.container(0, 0, [bg, coinsPu, heartPu, moneyPu, door]);
-
     this.initPlayer();
 
-    inventory = new Inventory(this, 400, 570, []);
+    inventory = new Inventory(this, 400, 570, [], inventoryData.items);
+    inventory.setSize(264, 77).setInteractive();
+
     inventory.initItems(['heart', 'coins', 'money']);
     inventory.setUI();
     inventory.setSize(264, 77).setInteractive();
@@ -80,24 +59,15 @@ export default class GameExteriorScene extends Phaser.Scene {
     this.initPickupsInteraction(Object.keys(pickupsMap));
 
     dialog = new Dialog(this, 0, 0, []);
-
     pickupsData = this.cache.json.get('pickupsData');
     dialog.setPickupsData(pickupsData);
     dialog.initPlayerDialogUI();
-
-    doorsData = this.cache.json.get('doorsData');
-    dialog.setDoorsData(doorsData);
-
-    door.on('pointerdown', () => {
-      currentDoor = 'cafe';
-    });
 
     this.input.keyboard.on('keyup-ESC', event => {
       if (this.menuOpened) {
         dialog.setVisible(false);
         this.menuOpened = false;
         currentPickup = null;
-        currentDoor = null;
         dialog.clearDialog();
       }
     });
@@ -185,20 +155,20 @@ export default class GameExteriorScene extends Phaser.Scene {
   }
 
   initPickups () {
-    coinsPu = this.add.image(100, 500, 'coinsPu');
-    coinsPu.setOrigin(0, 0);
+    // coinsPu = this.add.image(100, 500, 'coinsPu');
+    // coinsPu.setOrigin(0, 0);
 
-    heartPu = this.add.image(200, 500, 'heartPu');
-    heartPu.setOrigin(0, 0);
+    // heartPu = this.add.image(200, 500, 'heartPu');
+    // heartPu.setOrigin(0, 0);
 
-    moneyPu = this.add.image(800, 500, 'moneyPu');
-    moneyPu.setOrigin(0, 0);
+    // moneyPu = this.add.image(800, 500, 'moneyPu');
+    // moneyPu.setOrigin(0, 0);
 
-    pickupsMap = {
-      'coins': coinsPu,
-      'heart': heartPu,
-      'money': moneyPu
-    };
+    // pickupsMap = {
+    //   'coins': coinsPu,
+    //   'heart': heartPu,
+    //   'money': moneyPu
+    // };
   }
 
   initPickupsInteraction (items) {
@@ -206,13 +176,11 @@ export default class GameExteriorScene extends Phaser.Scene {
 
     bg.setInteractive().on('pointerdown', (pointer, localX, localY, event) => {
       currentPickup = null;
-      currentDoor = null;
     }, that);
 
     items.forEach(item => {
       pickupsMap[item].setInteractive().on('pointerdown', (pointer, localX, localY, event) => {
           currentPickup = item;
-          currentDoor = null;
       }, that);
     });
   }
@@ -227,27 +195,15 @@ export default class GameExteriorScene extends Phaser.Scene {
 
     player.on('WALK_COMPLETE', (player) => {
       if (player.currentState === 'INIT') {
-
         if (currentPickup) {
-          dialogSubTopic = 'pickup';
+          dialogType = 'pickup';
 
-          let { currentQuestionStatement, currentChoices } = dialog.getDialogData(currentPickup, dialogSubTopic, 'pickup');
-
-          dialog.displayDialog(currentQuestionStatement, currentChoices, player.x, player.y);
-
-          this.menuOpened = true;
-        }
-
-        if (currentDoor) {
-          dialogSubTopic = 'door';
-
-          let { currentQuestionStatement, currentChoices } = dialog.getDialogData('cafe', dialogSubTopic, 'door');
+          let { currentQuestionStatement, currentChoices } = dialog.getDialogData(currentPickup, dialogType);
 
           dialog.displayDialog(currentQuestionStatement, currentChoices, player.x, player.y);
 
           this.menuOpened = true;
         }
-
       }
     }, this);
 
@@ -267,35 +223,5 @@ export default class GameExteriorScene extends Phaser.Scene {
   addToInventory (pickup) {
     inventory.addItem(pickup);
     pickupsMap[pickup].setVisible(false);
-  }
-
-  enterScene () {
-    // this.cameras.main.fadeOut(1000, 0, 0, 0);
-      
-    // this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
-      this.scene.stop('GameExteriorScene');
-      this.scene.start('GameInteriorScene', { inventory, player, dialog });
-    // });
-  }
-
-  update () {
-    // parallax
-    if (player.x >= playerRightLimit) {
-      if (worldContainer.x <= 0 && worldContainer.x > bgLeftLimit) {
-        worldContainer.x -= bgMoveAmount;
-        player.x -= bgMoveAmount;
-      } else {
-        worldContainer.x = bgLeftLimit;
-      }
-    }
-
-    if (player.x <= playerLeftLimit) {
-      if (worldContainer.x >= bgLeftLimit && worldContainer.x < 0) {
-        worldContainer.x += bgMoveAmount;
-        player.x += bgMoveAmount;
-      } else {
-        worldContainer.x = 0;
-      }
-    }
   }
 }

@@ -15,3 +15,7 @@ dist/
 
 # wip
 _assets_wip/
+
+# assets
+src/assets/bg/bg-interior1.png
+src/assets/bg/bg-interior2.png

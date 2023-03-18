@@ -1,8 +1,3 @@
-const playerMinX = 60;
-const playerMaxX = 900;
-const playerMinY = 480;
-const playerMaxY = 530;
-
 export default class Player extends Phaser.GameObjects.Sprite {
     constructor (scene, x, y) {
         super(scene, x, y);
@@ -44,7 +39,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         });
     }
 
-    walk (pointer) {
+    walk (pointer, walkableArea) {
         if (this.currentState === 'IS_WALKING') {
             return;
         }
@@ -68,17 +63,17 @@ export default class Player extends Phaser.GameObjects.Sprite {
         let duration = (Phaser.Math.Distance.BetweenPoints(this, pointer) / 100) * 500;
 
         // limits
-        if (pointerX < playerMinX) {
-            pointerX = playerMinX;
+        if (pointerX < walkableArea.minX) {
+            pointerX = walkableArea.minX;
         }
-        if (pointerX > playerMaxX) {
-            pointerX = playerMaxX;
+        if (pointerX > walkableArea.maxX) {
+            pointerX = walkableArea.maxX;
         }
-        if (pointerY < playerMinY) {
-            pointerY = playerMinY;
+        if (pointerY < walkableArea.minY) {
+            pointerY = walkableArea.minY;
         }
-        if (pointerY > playerMaxY) {
-            pointerY = playerMaxY;
+        if (pointerY > walkableArea.maxY) {
+            pointerY = walkableArea.maxY;
         }
 
         let tween = this.currentScene.tweens.add({

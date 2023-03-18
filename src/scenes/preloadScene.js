@@ -1,4 +1,5 @@
 import bg from '../assets/bg/bg.png';
+import bgInterior from '../assets/bg/bg-interior2.png';
 import player from '../assets/sprites/BearSprites.png';
 import playBtn from '../assets/buttons/play-btn.png';
 import coinsInv from '../assets/inventory/coins-inventory.png';
@@ -10,6 +11,7 @@ import moneyPu from '../assets/pickups/money-pickup.png';
 import inventoryUI from '../assets/ui/inventory-ui.png';
 import title from '../assets/ui/title.png';
 import pickupsData from '../data/pickups.json';
+import doorsData from '../data/doors.json';
 
 export default class PreloadScene extends Phaser.Scene {
     constructor () {
@@ -18,6 +20,7 @@ export default class PreloadScene extends Phaser.Scene {
 
     preload () {
         this.load.image('bg', bg);
+        this.load.image('bgInterior', bgInterior);
         this.load.spritesheet('player', player, { frameWidth: 32, frameHeight: 32, startFrame: 0, endFrame: 1 });
         this.load.image('playBtn', playBtn);
         this.load.image('inventoryUI', inventoryUI);
@@ -35,6 +38,7 @@ export default class PreloadScene extends Phaser.Scene {
 
         // data
         this.load.json('pickupsData', pickupsData);
+        this.load.json('doorsData', doorsData);
     }
       
     create () {

@@ -9,9 +9,10 @@ let choiceButtons = [];
 let currentTopic = null;
 
 let dialogContainer = null;
-let dialogType = 'pickup';
+let dialogType = null;
 
 let pickupsData;
+let doorsData;
 
 let currentX = 0;
 let currentY = 0;
@@ -30,15 +31,40 @@ export default class Dialog extends Phaser.GameObjects.Container {
         pickupsData = data;
     }
 
-    getDialogData(topic, topicNode) {
-        let node = pickupsData && pickupsData[topic] && pickupsData[topic][topicNode] ? pickupsData[topic][topicNode] : null;
+    setDoorsData (data) {
+        doorsData = data;
+    }
+
+    getDialogData(topic, subTopic, dType) {
+        let dataMap = {
+            'pickup': pickupsData,
+            'door': doorsData
+        }
+
+        // if (!dType && subTopic.toLowerCase().indexOf('pickup') !== -1) {
+        //     dType = 'pickup';
+        // } else {
+        //     dType = 'door';
+        // }
+
+        if (!dType) {
+            if (subTopic.indexOf('pickup') !== -1) {
+                dType = 'pickup';
+            } else {
+                dType = 'door';
+            }
+        }
+        
+        dialogType = dType;
+
+        let node = dataMap[dialogType] && dataMap[dialogType][topic] && dataMap[dialogType][topic][subTopic] ? dataMap[dialogType][topic][subTopic] : null;
 
         // clear all current choices
         currentChoices.length = 0;
 
         if (node) {
             if (!currentTopic) {
-                currentTopic = topicNode;
+                currentTopic = subTopic;
             }
 
             if (node.question) {
@@ -56,6 +82,8 @@ export default class Dialog extends Phaser.GameObjects.Container {
                     currentQuestionStatement = node.statement;
                 }
             }
+        } else {
+            return null;
         }
 
         return {
@@ -182,7 +210,7 @@ export default class Dialog extends Phaser.GameObjects.Container {
         choiceTFs.push(choiceTF1);
 
         choiceBtn1.on('pointerdown', () => {
-            that.chooseChoice(0, this.scene.getCurrentPickup());
+            that.chooseChoice(0);
         });
         choiceBtn1.on('pointerover', (event, gameObjects) => {
             choiceTF1.setFill(0xfa8b66);
@@ -210,7 +238,7 @@ export default class Dialog extends Phaser.GameObjects.Container {
         choiceTFs.push(choiceTF2);
 
         choiceBtn2.on('pointerdown', () => {
-            that.chooseChoice(1, this.scene.getCurrentPickup());
+            that.chooseChoice(1);
         });
         choiceBtn2.on('pointerover', (event, gameObjects) => {
             choiceTF2.setFill(0xfa8b66);
@@ -225,15 +253,28 @@ export default class Dialog extends Phaser.GameObjects.Container {
         dialogContainer.setVisible(false);
     }
 
-    chooseChoice (num, currentPickup) {
+    chooseChoice (num) {
         if (currentChoices[num]) {
             currentTopic = currentChoices[num].nextTopic;
 
-            if (dialogType === 'pickup' && currentTopic === 'pickupResultYes') {
-                this.scene.addToInventory(currentPickup);
+            if (dialogType === 'pickup') {
+                if (currentTopic === 'pickupResultYes') {
+                    this.scene.addToInventory(this.scene.getCurrentPickup());
+                }
+
+                this.setNextDialog(pickupsData, this.scene.getCurrentPickup(), currentTopic);
             }
 
-            this.setNextDialog(pickupsData, currentPickup, currentTopic);
+            if (dialogType === 'door') {
+
+                this.setNextDialog(doorsData, 'cafe', currentTopic);
+
+                if (currentTopic === 'doorResultYes') {
+                    setTimeout(() => {
+                        this.scene.enterScene();
+                    }, 800);
+                }
+            }
         }
     }
 }
