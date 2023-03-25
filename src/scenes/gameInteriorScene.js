@@ -57,6 +57,8 @@ export default class GameInteriorScene extends Phaser.Scene {
   create () {
     let { width, height } = this.sys.game.canvas;
 
+    this.input.setDefaultCursor('');
+
     sceneWidth = width;
     sceneHeight = height;
 
@@ -90,6 +92,14 @@ export default class GameInteriorScene extends Phaser.Scene {
     dialog.setDoorsData(doorsData);
 
     dialog.initPlayerDialogUI();
+
+    door.on('pointerover', () => {
+      this.input.setDefaultCursor('url(src/assets/ui/cursor.png), pointer');
+    });
+
+    door.on('pointerout', () => {
+      this.input.setDefaultCursor('');
+    });
 
     door.on('pointerdown', () => {
       currentPickup = null;
@@ -231,7 +241,7 @@ export default class GameInteriorScene extends Phaser.Scene {
     }, that);
 
     items.forEach(item => {
-      pickupsMap[item].setInteractive().on('pointerdown', (pointer, localX, localY, event) => {
+      pickupsMap[item].setInteractive({ cursor: 'url(src/assets/ui/cursor.png), pointer' }).on('pointerdown', (pointer, localX, localY, event) => {
         currentDoor = null;  
         currentPickup = item;
         currentObject = null;

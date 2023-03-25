@@ -68,6 +68,8 @@ export default class GameExteriorScene extends Phaser.Scene {
   create () {
     let { width, height } = this.sys.game.canvas;
 
+    this.input.setDefaultCursor('');
+
     sceneWidth = width;
     sceneHeight = height;
 
@@ -114,6 +116,14 @@ export default class GameExteriorScene extends Phaser.Scene {
 
     dialog.initPlayerDialogUI();
 
+    door.on('pointerover', () => {
+      this.input.setDefaultCursor('url(src/assets/ui/cursor.png), pointer');
+    });
+
+    door.on('pointerout', () => {
+      this.input.setDefaultCursor('');
+    });
+
     door.on('pointerdown', () => {
       currentDoor = 'cafe';
       currentObject = null;
@@ -124,6 +134,14 @@ export default class GameExteriorScene extends Phaser.Scene {
       currentDoor = null;
       currentObject = 'sign';
       currentPickup = null;
+    });
+
+    sign.on('pointerover', () => {
+      this.input.setDefaultCursor('url(src/assets/ui/cursor.png), pointer');
+    });
+
+    sign.on('pointerout', () => {
+      this.input.setDefaultCursor('');
     });
 
     this.input.keyboard.on('keyup-ESC', event => {
@@ -251,7 +269,7 @@ export default class GameExteriorScene extends Phaser.Scene {
     }, that);
 
     items.forEach(item => {
-      pickupsMap[item].setInteractive().on('pointerdown', (pointer, localX, localY, event) => {
+      pickupsMap[item].setInteractive({ cursor: 'url(src/assets/ui/cursor.png), pointer' }).on('pointerdown', (pointer, localX, localY, event) => {
           currentPickup = item;
           currentDoor = null;
           currentObject = null;
@@ -360,7 +378,7 @@ export default class GameExteriorScene extends Phaser.Scene {
       currentObject = null;
     }, that);
 
-    npc.setInteractive().on('pointerdown', (pointer, localX, localY, event) => {
+    npc.setInteractive({ cursor: 'url(src/assets/ui/cursor.png), pointer' }).on('pointerdown', (pointer, localX, localY, event) => {
       currentDoor = null;  
       currentPickup = null;
       currentObject = 'npc';
