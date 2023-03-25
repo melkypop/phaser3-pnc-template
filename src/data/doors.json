@@ -1,5 +1,8 @@
 {
 	"cafe": {
+        "noMoney": {
+            "statement": "...but I have no money!"
+        },
 		"door": {
 			"question": "Cafe open! Enter?",
             "choices": [

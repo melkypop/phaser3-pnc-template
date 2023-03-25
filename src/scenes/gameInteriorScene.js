@@ -73,7 +73,7 @@ export default class GameInteriorScene extends Phaser.Scene {
     this.initPlayer();
 
     inventory = new Inventory(this, sceneWidth/2 - 132, sceneHeight - 30, [], inventoryData ? inventoryData.items : []);
-    inventory.initItems(['heart', 'coins', 'money']);
+    inventory.initItems(['heart', 'coins', 'money', 'egg', 'turnip', 'flan']);
     inventory.setUI();
     inventory.setSize(264, 77).setInteractive();
 

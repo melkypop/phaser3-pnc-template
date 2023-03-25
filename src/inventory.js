@@ -4,6 +4,9 @@ let inventoryUI = null;
 let coinsInv = null;
 let heartInv = null;
 let moneyInv = null;
+let eggInv = null;
+let turnipInv = null;
+let flanInv = null;
 
 let items = {
     0: { x: 12, y: 10, count: 0, name: '' },
@@ -36,7 +39,7 @@ export default class Inventory extends Phaser.GameObjects.Container {
     }
 
     getInventoryItems () {
-        return [heartInv, coinsInv, moneyInv];
+        return [heartInv, coinsInv, moneyInv, eggInv, turnipInv, flanInv];
     }
 
     getItems () {
@@ -65,6 +68,21 @@ export default class Inventory extends Phaser.GameObjects.Container {
                 moneyInv.setOrigin(0, 0);
                 moneyInv.visible = false;
                 invItems.push(moneyInv);
+            } else if (item === 'egg') {
+                eggInv = this.scene.add.image(0, 0, 'eggInv');
+                eggInv.setOrigin(0, 0);
+                eggInv.visible = false;
+                invItems.push(eggInv);
+            } else if (item === 'turnip') {
+                turnipInv = this.scene.add.image(0, 0, 'turnipInv');
+                turnipInv.setOrigin(0, 0);
+                turnipInv.visible = false;
+                invItems.push(turnipInv);
+            } else if (item === 'flan') {
+                flanInv = this.scene.add.image(0, 0, 'flanInv');
+                flanInv.setOrigin(0, 0);
+                flanInv.visible = false;
+                invItems.push(flanInv);
             }
 
             nameMap[item] = invItems[invItems.length - 1];

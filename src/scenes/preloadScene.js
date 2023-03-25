@@ -6,6 +6,9 @@ import playBtn from '../assets/buttons/play-btn.png';
 import coinsInv from '../assets/inventory/coins-inventory.png';
 import heartInv from '../assets/inventory/heart-inventory.png';
 import moneyInv from '../assets/inventory/money-inventory.png';
+import eggInv from '../assets/inventory/egg-inventory2.png';
+import turnipInv from '../assets/inventory/turnip-inventory2.png';
+import flanInv from '../assets/inventory/flan-inventory2.png';
 import coinsPu from '../assets/pickups/coins-pickup.png';
 import heartPu from '../assets/pickups/heart-pickup.png';
 import moneyPu from '../assets/pickups/money-pickup.png';
@@ -33,6 +36,9 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.image('coinsInv', coinsInv);
         this.load.image('heartInv', heartInv);
         this.load.image('moneyInv', moneyInv);
+        this.load.image('eggInv', eggInv);
+        this.load.image('turnipInv', turnipInv);
+        this.load.image('flanInv', flanInv);
 
         // pickups
         this.load.image('coinsPu', coinsPu);

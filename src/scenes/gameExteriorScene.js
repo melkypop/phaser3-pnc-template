@@ -93,7 +93,7 @@ export default class GameExteriorScene extends Phaser.Scene {
     this.initPlayer();
 
     inventory = new Inventory(this, sceneWidth/2 - 132, sceneHeight - 30, [], inventoryData ? inventoryData.items : []);
-    inventory.initItems(['heart', 'coins', 'money']);
+    inventory.initItems(['heart', 'coins', 'money', 'egg', 'turnip', 'flan']);
     inventory.setUI();
     inventory.setSize(264, 77).setInteractive();
 
@@ -289,6 +289,14 @@ export default class GameExteriorScene extends Phaser.Scene {
         if (currentDoor) {
           dialogSubTopic = 'door';
 
+          if (currentDoor === 'cafe') {
+            if (Object.values(inventory.getItems())[1] && Object.values(inventory.getItems())[1].name === 'money') {
+              dialogSubTopic = 'door'
+            } else {
+              dialogSubTopic = 'noMoney';
+            }
+          }
+
           let { currentQuestionStatement, currentChoices } = dialog.getDialogData('cafe', dialogSubTopic, 'door');
 
           dialog.displayDialog(currentQuestionStatement, currentChoices, dialogX, player.y);
@@ -299,8 +307,12 @@ export default class GameExteriorScene extends Phaser.Scene {
         if (currentObject) {
           dialogSubTopic = 'object';
 
-          if (currentObject === 'npc' && Object.values(inventory.getItems())[0] &&  Object.values(inventory.getItems())[0].name === 'heart') {
-            dialogSubTopic = 'heart';
+          if (currentObject === 'npc' && Object.values(inventory.getItems())[0] && Object.values(inventory.getItems())[0].name === 'heart') {
+            if (Object.values(inventory.getItems())[1] && Object.values(inventory.getItems())[1].name === 'money') {
+              dialogSubTopic = 'money'
+            } else {
+              dialogSubTopic = 'heart';
+            }
           }
 
           let { currentQuestionStatement, currentChoices } = dialog.getDialogData(currentObject, dialogSubTopic, 'object');
@@ -309,7 +321,7 @@ export default class GameExteriorScene extends Phaser.Scene {
 
           this.menuOpened = true;
 
-          if (currentObject === 'sign' && heartPu) {
+          if (currentObject === 'sign' && heartPu && (!Object.values(inventory.getItems())[0] || (Object.values(inventory.getItems())[0] && Object.values(inventory.getItems())[0].name !== 'heart'))) {
             heartPu.setVisible(true);
           }
 

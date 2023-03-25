@@ -291,6 +291,20 @@ export default class Dialog extends Phaser.GameObjects.Container {
                     }, 800);
                 }
             }
+
+            if (dialogType === 'object') {
+                if (currentTopic === 'heartResultYes') {
+
+                    this.scene.addToInventory('money');
+
+                    this.setNextDialog(objectsData, 'npc', currentTopic);
+
+                } else if (currentTopic === 'heartResultNo') {
+
+                    this.setNextDialog(objectsData, 'npc', currentTopic);
+
+                }
+            }
         }
     }
 }

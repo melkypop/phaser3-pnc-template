@@ -19,3 +19,6 @@ _assets_wip/
 # assets
 src/assets/bg/bg-interior2.png
 src/assets/sprites/FoodSprites2.png
+src/assets/inventory/egg-inventory2.png
+src/assets/inventory/flan-inventory2.png
+src/assets/inventory/turnip-inventory2.png
