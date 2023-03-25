@@ -9,6 +9,9 @@ const walkableArea = {
   maxY: 510
 };
 
+let sceneWidth = 0;
+let sceneHeight = 0;
+
 let bg = null;
 let player = null;
 
@@ -23,6 +26,18 @@ let pickupsData = null;
 // dialog
 let dialogType = null;
 let dialog = null;
+let dialogSubTopic = null;
+
+// door
+let door = null;
+let currentDoor = null;
+let doorsData = null;
+
+let currentObject = null;
+
+// food
+let eggPu = null;
+let turnipPu = null;
 
 export default class GameInteriorScene extends Phaser.Scene {
   constructor () {
@@ -40,16 +55,24 @@ export default class GameInteriorScene extends Phaser.Scene {
   }
 
   create () {
+    let { width, height } = this.sys.game.canvas;
+
+    sceneWidth = width;
+    sceneHeight = height;
+
     bg = this.add.image(0, 0, 'bgInterior');
     bg.setOrigin(0, 0);
 
     this.initPickups();
 
+    let doorRect = new Phaser.Geom.Rectangle(300, 500, 400, 50);
+    let door = this.add.graphics({ fillStyle: { color: 0x0000ff, alpha: 0 } });
+    door.fillRectShape(doorRect);
+    door.setInteractive(doorRect, Phaser.Geom.Rectangle.Contains);
+
     this.initPlayer();
 
-    inventory = new Inventory(this, 400, 570, [], inventoryData.items);
-    inventory.setSize(264, 77).setInteractive();
-
+    inventory = new Inventory(this, sceneWidth/2 - 132, sceneHeight - 30, [], inventoryData ? inventoryData.items : []);
     inventory.initItems(['heart', 'coins', 'money']);
     inventory.setUI();
     inventory.setSize(264, 77).setInteractive();
@@ -59,16 +82,31 @@ export default class GameInteriorScene extends Phaser.Scene {
     this.initPickupsInteraction(Object.keys(pickupsMap));
 
     dialog = new Dialog(this, 0, 0, []);
+
     pickupsData = this.cache.json.get('pickupsData');
     dialog.setPickupsData(pickupsData);
+
+    doorsData = this.cache.json.get('doorsData');
+    dialog.setDoorsData(doorsData);
+
     dialog.initPlayerDialogUI();
+
+    door.on('pointerdown', () => {
+      currentPickup = null;
+      currentDoor = 'outside';
+      currentObject = null;
+    });
 
     this.input.keyboard.on('keyup-ESC', event => {
       if (this.menuOpened) {
         dialog.setVisible(false);
         this.menuOpened = false;
         currentPickup = null;
+        currentDoor = null;
+        currentObject = null;
         dialog.clearDialog();
+        dialog.hideDialog();
+        dialog.hideDialogButtons();
       }
     });
   }
@@ -155,32 +193,48 @@ export default class GameInteriorScene extends Phaser.Scene {
   }
 
   initPickups () {
-    // coinsPu = this.add.image(100, 500, 'coinsPu');
-    // coinsPu.setOrigin(0, 0);
+    this.anims.create({
+      key: 'egg',
+      frames: this.anims.generateFrameNumbers('food', { frames: [ 0, 1 ] }),
+      frameRate: 8,
+      repeat: -1
+    });
 
-    // heartPu = this.add.image(200, 500, 'heartPu');
-    // heartPu.setOrigin(0, 0);
+    this.anims.create({
+      key: 'turnip',
+      frames: this.anims.generateFrameNumbers('food', { frames: [ 2, 3 ] }),
+      frameRate: 8,
+      repeat: -1
+    });
 
-    // moneyPu = this.add.image(800, 500, 'moneyPu');
-    // moneyPu.setOrigin(0, 0);
+    eggPu = this.add.sprite(295, 320);
+    eggPu.setScale(2);
+    eggPu.play('egg');
 
-    // pickupsMap = {
-    //   'coins': coinsPu,
-    //   'heart': heartPu,
-    //   'money': moneyPu
-    // };
+    turnipPu = this.add.sprite(480, 320);
+    turnipPu.setScale(2);
+    turnipPu.play('turnip');
+
+    pickupsMap = {
+      'egg': eggPu,
+      'turnip': turnipPu
+    };
   }
 
   initPickupsInteraction (items) {
     let that = this;
 
     bg.setInteractive().on('pointerdown', (pointer, localX, localY, event) => {
+      currentDoor = null;
       currentPickup = null;
+      currentObject = null;
     }, that);
 
     items.forEach(item => {
       pickupsMap[item].setInteractive().on('pointerdown', (pointer, localX, localY, event) => {
-          currentPickup = item;
+        currentDoor = null;  
+        currentPickup = item;
+        currentObject = null;
       }, that);
     });
   }
@@ -188,7 +242,7 @@ export default class GameInteriorScene extends Phaser.Scene {
   initPlayer () {
     let that = this;
 
-    player = new Player(this, 600, 500);
+    player = new Player(this, 580, 420);
     player.setScale(2);
     this.physics.add.existing(player);
     this.add.existing(player);
@@ -199,6 +253,16 @@ export default class GameInteriorScene extends Phaser.Scene {
           dialogType = 'pickup';
 
           let { currentQuestionStatement, currentChoices } = dialog.getDialogData(currentPickup, dialogType);
+
+          dialog.displayDialog(currentQuestionStatement, currentChoices, player.x, player.y);
+
+          this.menuOpened = true;
+        }
+
+        if (currentDoor) {
+          dialogSubTopic = 'door';
+
+          let { currentQuestionStatement, currentChoices } = dialog.getDialogData('outside', dialogSubTopic, 'door');
 
           dialog.displayDialog(currentQuestionStatement, currentChoices, player.x, player.y);
 
@@ -220,8 +284,21 @@ export default class GameInteriorScene extends Phaser.Scene {
     return currentPickup;
   }
 
+  getCurrentDoor () {
+    return currentDoor;
+  }
+
   addToInventory (pickup) {
     inventory.addItem(pickup);
     pickupsMap[pickup].setVisible(false);
+  }
+
+  enterScene () {
+    this.cameras.main.fadeOut(800, 0, 0, 0);
+      
+    this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
+      this.scene.stop('GameInteriorScene');
+      this.scene.start('GameExteriorScene', { inventory, player, dialog });
+    });
   }
 }

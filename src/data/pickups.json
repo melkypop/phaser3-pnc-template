@@ -5,8 +5,6 @@
             "choices": [
                 {
                     "answer": "Yes",
-                    "action": "addToInventory",
-                    "count": 1,
                     "nextTopic": "pickupResultYes"
                 },
                 {
@@ -24,12 +22,10 @@
 	},
     "heart": {
 		"pickup": {
-			"question": "A lonely heart. Pick it up?",
+			"question": "A friendly heart. Pick it up?",
             "choices": [
                 {
                     "answer": "Yes",
-                    "action": "addToInventory",
-                    "count": 1,
                     "nextTopic": "pickupResultYes"
                 },
                 {
@@ -51,8 +47,48 @@
             "choices": [
                 {
                     "answer": "Yes",
-                    "action": "addToInventory",
-                    "count": 1,
+                    "nextTopic": "pickupResultYes"
+                },
+                {
+                    "answer": "No",
+                    "nextTopic": "pickupResultNo"
+                }
+            ]
+		},
+        "pickupResultYes": {
+			"statement": "Got it!"
+        },
+        "pickupResultNo": {
+			"statement": "Nah, not interested."
+        }
+	},
+    "egg": {
+		"pickup": {
+			"question": "Egg. Buy for a dollar?",
+            "choices": [
+                {
+                    "answer": "Yes",
+                    "nextTopic": "pickupResultYes"
+                },
+                {
+                    "answer": "No",
+                    "nextTopic": "pickupResultNo"
+                }
+            ]
+		},
+        "pickupResultYes": {
+			"statement": "Got it!"
+        },
+        "pickupResultNo": {
+			"statement": "Nah, not interested."
+        }
+	},
+    "turnip": {
+		"pickup": {
+			"question": "Turnip. Buy for a coin?",
+            "choices": [
+                {
+                    "answer": "Yes",
                     "nextTopic": "pickupResultYes"
                 },
                 {

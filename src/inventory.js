@@ -39,6 +39,10 @@ export default class Inventory extends Phaser.GameObjects.Container {
         return [heartInv, coinsInv, moneyInv];
     }
 
+    getItems () {
+        return items;
+    }
+
     initItems (inventoryItems) {
         inventoryUI = this.scene.add.image(0, 0, 'inventoryUI');
         inventoryUI.setOrigin(0, 0).setInteractive();

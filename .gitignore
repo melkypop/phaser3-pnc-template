@@ -17,5 +17,5 @@ dist/
 _assets_wip/
 
 # assets
-src/assets/bg/bg-interior1.png
 src/assets/bg/bg-interior2.png
+src/assets/sprites/FoodSprites2.png

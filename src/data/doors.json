@@ -19,5 +19,26 @@
         "doorResultNo": {
 			"statement": "Nah, not interested."
         }
+	},
+    "outside": {
+		"door": {
+			"question": "Go outside?",
+            "choices": [
+                {
+                    "answer": "Yes",
+                    "nextTopic": "doorResultYes"
+                },
+                {
+                    "answer": "No",
+                    "nextTopic": "doorResultNo"
+                }
+            ]
+		},
+        "doorResultYes": {
+			"statement": "Let's go!"
+        },
+        "doorResultNo": {
+			"statement": "Nah, not yet."
+        }
 	}
 }

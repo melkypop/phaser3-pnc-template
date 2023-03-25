@@ -1,0 +1,111 @@
+{
+	"npc": {
+		"object": {
+			"statement": "Sigh..."
+		},
+        "heart": {
+            "question": "Sighhh.....",
+            "choices": [
+                {
+                    "answer": "Give <3",
+                    "nextTopic": "heartResultYes"
+                },
+                {
+                    "answer": "...",
+                    "nextTopic": "heartResultNo"
+                }
+            ]
+        },
+        "heartResultYes": {
+			"statement": "Thank you! Here... money doesn't grow on... shrubs. <shrugs>"
+		},
+        "heartResultNo": {
+			"statement": "Huhhh..."
+		},
+        "money": {
+            "statement": "Money doesn't grow on shrubs."
+        },
+        "hungry": {
+            "statement": "<growl> My stomach. <grind> My sweet tooth."
+        },
+        "flan": {
+            "question": "<growl> My stomach. <grind> My sweet tooth.",
+            "choices": [
+                {
+                    "answer": "Give flan",
+                    "nextTopic": "flanResultYes"
+                },
+                {
+                    "answer": "...",
+                    "nextTopic": "flanResultNo"
+                }
+            ]
+        },
+        "flanResultYes": {
+            "statement": "Oooooh my favorite! Thank you!"
+        },
+        "flanResultNo": {
+            "statement": "Awww..."
+        }
+	},
+	"sign": {
+		"object": {
+			"statement": "Spread the love."
+		}
+	},
+	"pot": {
+		"object": {
+			"question": "Welcome to the mixing pot! Mix 2 ingredients?",
+            "choices": [
+                {
+                    "answer": "Okay",
+                    "nextTopic": "potResultMix"
+                },
+                {
+                    "answer": "Cancel",
+                    "nextTopic": "potResultCancel"
+                }
+            ]
+		},
+        "potResultMix": {
+			"question": "Add activated inventory item into the pot?",
+            "choices": [
+                {
+                    "answer": "Yes",
+                    "nextTopic": "potResultMixYes"
+                },
+                {
+                    "answer": "Back",
+                    "nextTopic": "pot"
+                }
+            ]
+        },
+        "potResultMixYes": {
+			"statement": "That was cool!"
+        },
+        "potResultCancel": {
+			"statement": "Nah, maybe next time."
+        }
+	},
+    "pot_full": {
+		"object": {
+			"question": "The pot is full! Mix it?",
+            "choices": [
+                {
+                    "answer": "Okay",
+                    "nextTopic": "potResultYes"
+                },
+                {
+                    "answer": "Cancel",
+                    "nextTopic": "potResultNo"
+                }
+            ]
+		},
+        "potResultYes": {
+			"statement": "Check out the inventory!"
+        },
+        "potResultNo": {
+			"statement": "Nah, maybe next time."
+        }
+	}
+}

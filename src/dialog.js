@@ -11,8 +11,9 @@ let currentTopic = null;
 let dialogContainer = null;
 let dialogType = null;
 
-let pickupsData;
-let doorsData;
+let pickupsData = null;
+let doorsData = null;
+let objectsData = null;
 
 let currentX = 0;
 let currentY = 0;
@@ -35,10 +36,15 @@ export default class Dialog extends Phaser.GameObjects.Container {
         doorsData = data;
     }
 
+    setObjectsData (data) {
+        objectsData = data;
+    }
+
     getDialogData(topic, subTopic, dType) {
         let dataMap = {
             'pickup': pickupsData,
-            'door': doorsData
+            'door': doorsData,
+            'object': objectsData
         }
 
         // if (!dType && subTopic.toLowerCase().indexOf('pickup') !== -1) {
@@ -50,8 +56,10 @@ export default class Dialog extends Phaser.GameObjects.Container {
         if (!dType) {
             if (subTopic.indexOf('pickup') !== -1) {
                 dType = 'pickup';
-            } else {
+            } else if (subTopic.indexOf('door') !== -1) {
                 dType = 'door';
+            } else {
+                dType = 'object';
             }
         }
         
@@ -126,7 +134,7 @@ export default class Dialog extends Phaser.GameObjects.Container {
 
         this.showDialogButtons();
 
-        currChoices.forEach((choice, idx) => {
+        (currChoices || []).forEach((choice, idx) => {
             if (choiceTFs[idx] && choice.answer) {
                 choiceTFs[idx].setText(choice.answer);
             }
@@ -161,6 +169,13 @@ export default class Dialog extends Phaser.GameObjects.Container {
                 choice.setText('');
             }
         });
+    }
+
+    destroyDialog () {
+        this.clearDialog();
+        currentChoices.length = 0;
+        choiceTFs.length = 0;
+        choiceButtons.length = 0;
     }
 
     setNextDialog (data, currNode, currTopic) {
@@ -200,7 +215,7 @@ export default class Dialog extends Phaser.GameObjects.Container {
 
         choiceButtons.push(choiceBtn1);
 
-        let choiceTF1 = this.scene.add.text(110, -90, 'Y', {
+        let choiceTF1 = this.scene.add.text(110, -90, '', {
             font: "16px Courier New",
             fill: "#483c32",
             align: "left",
@@ -228,7 +243,7 @@ export default class Dialog extends Phaser.GameObjects.Container {
 
         choiceButtons.push(choiceBtn2);
 
-        let choiceTF2 = this.scene.add.text(110, -60, 'N', {
+        let choiceTF2 = this.scene.add.text(110, -60, '', {
             font: "16px Courier New",
             fill: "#483c32",
             align: "left",
@@ -267,10 +282,11 @@ export default class Dialog extends Phaser.GameObjects.Container {
 
             if (dialogType === 'door') {
 
-                this.setNextDialog(doorsData, 'cafe', currentTopic);
+                this.setNextDialog(doorsData, this.scene.getCurrentDoor(), currentTopic);
 
                 if (currentTopic === 'doorResultYes') {
                     setTimeout(() => {
+                        this.destroyDialog();
                         this.scene.enterScene();
                     }, 800);
                 }
