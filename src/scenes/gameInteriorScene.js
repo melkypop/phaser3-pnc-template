@@ -40,6 +40,9 @@ let eggPu = null;
 let flanPu = null;
 let sushiPu = null;
 
+let pot = null;
+let potContents = [];
+
 export default class GameInteriorScene extends Phaser.Scene {
   constructor () {
       super('GameInteriorScene');
@@ -52,6 +55,7 @@ export default class GameInteriorScene extends Phaser.Scene {
         inventoryData = data.inventory;
         player = data.player;
         dialog = data.dialog;
+        potContents = data.potContents || [];
     }
   }
 
@@ -72,6 +76,11 @@ export default class GameInteriorScene extends Phaser.Scene {
     let door = this.add.graphics({ fillStyle: { color: 0x0000ff, alpha: 0 } });
     door.fillRectShape(doorRect);
     door.setInteractive(doorRect, Phaser.Geom.Rectangle.Contains);
+
+    let potRect = new Phaser.Geom.Rectangle(640, 310, 60, 40);
+    pot = this.add.graphics({ fillStyle: { color: 0x0000ff, alpha: 0 } });
+    pot.fillRectShape(potRect);
+    pot.setInteractive(potRect, Phaser.Geom.Rectangle.Contains);
 
     this.initPlayer();
 
@@ -108,6 +117,20 @@ export default class GameInteriorScene extends Phaser.Scene {
       currentObject = null;
     });
 
+    pot.on('pointerdown', () => {
+      currentDoor = null;
+      currentObject = 'pot';
+      currentPickup = null;
+    });
+
+    pot.on('pointerover', () => {
+      this.input.setDefaultCursor('url(src/assets/ui/cursor.png), pointer');
+    });
+
+    pot.on('pointerout', () => {
+      this.input.setDefaultCursor('');
+    });
+
     this.input.keyboard.on('keyup-ESC', event => {
       if (this.menuOpened) {
         dialog.setVisible(false);
@@ -120,6 +143,16 @@ export default class GameInteriorScene extends Phaser.Scene {
         dialog.hideDialogButtons();
       }
     });
+  }
+
+  getPotContents () {
+    return potContents;
+  }
+
+  setPotContents (item) {
+    if (potContents && Array.isArray(potContents) && !potContents.includes(item)) {
+      potContents.push(item);
+    }
   }
 
   initInventoryTween () {
@@ -292,6 +325,37 @@ export default class GameInteriorScene extends Phaser.Scene {
 
           this.menuOpened = true;
         }
+
+        if (currentObject) {
+          dialogSubTopic = 'object';
+
+          if (currentObject === 'pot' && inventory.checkForItem('turnip') && potContents && Array.isArray(potContents) && !potContents.includes('turnip')) {
+            dialogSubTopic = 'addTurnip';
+          }
+
+          if (currentObject === 'pot' && inventory.checkForItem('egg') && potContents && Array.isArray(potContents) && !potContents.includes('egg')) {
+            dialogSubTopic = 'addEgg';
+          }
+
+          console.log('potContents = ' , potContents)
+          console.log('currentObject = ' , currentObject)
+          console.log('dialogSubTopic = ' , dialogSubTopic)
+
+          if (potContents.includes('egg') && potContents.includes('turnip')) {
+            dialogSubTopic = 'mixPot';
+          }
+
+          if (potContents.includes('flan') && flanPu && !inventory.checkForItem('flan')) {
+            flanPu.setVisible(true);
+          }
+         
+
+          let { currentQuestionStatement, currentChoices } = dialog.getDialogData(currentObject, dialogSubTopic, 'object');
+
+          dialog.displayDialog(currentQuestionStatement, currentChoices, player.x, player.y);
+
+          this.menuOpened = true;
+        }
       }
     }, this);
 
@@ -315,6 +379,10 @@ export default class GameInteriorScene extends Phaser.Scene {
   addToInventory (pickup) {
     inventory.addItem(pickup);
     pickupsMap[pickup].setVisible(false);
+  }
+
+  removeFromInventory (pickup) {
+    inventory.removeItem(pickup);
   }
 
   enterScene () {

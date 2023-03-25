@@ -60,56 +60,63 @@
 	},
 	"pot": {
 		"object": {
-			"question": "Welcome to the mixing pot! Mix 2 ingredients?",
-            "choices": [
-                {
-                    "answer": "Okay",
-                    "nextTopic": "potResultMix"
-                },
-                {
-                    "answer": "Cancel",
-                    "nextTopic": "potResultCancel"
-                }
-            ]
+			"statement": "Come back to mix 2 ingredients here!"
 		},
-        "potResultMix": {
-			"question": "Add activated inventory item into the pot?",
+        "contentsTurnip": {
+			"statement": "A turnip inside. Come back to mix 2nd ingredient."
+		},
+        "contentsEgg": {
+			"statement": "An egg inside. Come back to mix 2nd ingredient."
+		},
+        "mixPot": {
+			"question": "Egg and turnip. Mix now?",
             "choices": [
                 {
                     "answer": "Yes",
                     "nextTopic": "potResultMixYes"
                 },
                 {
-                    "answer": "Back",
+                    "answer": "No",
                     "nextTopic": "pot"
                 }
             ]
         },
-        "potResultMixYes": {
-			"statement": "That was cool!"
-        },
-        "potResultCancel": {
-			"statement": "Nah, maybe next time."
-        }
-	},
-    "potFull": {
-		"object": {
-			"question": "The pot is full! Mix it?",
+        "addTurnip": {
+			"question": "Add turnip into the pot?",
             "choices": [
                 {
-                    "answer": "Okay",
-                    "nextTopic": "potResultYes"
+                    "answer": "Yes",
+                    "nextTopic": "potResultAddTurnip"
                 },
                 {
-                    "answer": "Cancel",
-                    "nextTopic": "potResultNo"
+                    "answer": "No",
+                    "nextTopic": "pot"
                 }
             ]
-		},
-        "potResultYes": {
-			"statement": "Check out the inventory!"
         },
-        "potResultNo": {
+        "addEgg": {
+			"question": "Add egg into the pot?",
+            "choices": [
+                {
+                    "answer": "Yes",
+                    "nextTopic": "potResultAddEgg"
+                },
+                {
+                    "answer": "No",
+                    "nextTopic": "pot"
+                }
+            ]
+        },
+        "potResultAddEgg": {
+			"statement": "That was cool!"
+        },
+        "potResultAddTurnip": {
+			"statement": "That was cool!"
+        },
+        "potResultMixYes": {
+			"statement": "You made flan!"
+        },
+        "potResultCancel": {
 			"statement": "Nah, maybe next time."
         }
 	}

@@ -128,6 +128,18 @@ export default class Inventory extends Phaser.GameObjects.Container {
 
     }
 
+    removeItem (name) {
+        if (this.items && Array.isArray(Object.values(this.items)) && Object.values(this.items).length > 0) {
+            Object.values(this.items).forEach((it, idx) => {
+                if (it.name === name) {
+                    nameMap[name].visible = false;
+                    this.items[idx].name = '';
+                    this.items[idx].count = 0;
+                }
+            })
+        }
+    }
+
     setUI () {
         if (!this.items) {
             return;

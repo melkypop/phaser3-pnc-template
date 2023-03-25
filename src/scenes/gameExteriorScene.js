@@ -52,6 +52,8 @@ let currentObject = null;
 let sign = null;
 let shrub = null;
 
+let potContents = [];
+
 export default class GameExteriorScene extends Phaser.Scene {
   constructor () {
       super('GameExteriorScene');
@@ -64,6 +66,7 @@ export default class GameExteriorScene extends Phaser.Scene {
         inventoryData = data.inventory;
         player = data.player;
         dialog = data.dialog;
+        potContents = data.potContents || [];
     }
   }
 
@@ -346,7 +349,7 @@ export default class GameExteriorScene extends Phaser.Scene {
           dialogSubTopic = 'door';
 
           if (currentDoor === 'cafe') {
-            if (Object.values(inventory.getItems())[1] && Object.values(inventory.getItems())[1].name === 'money') {
+            if (inventory.checkForItem('money')) {
               dialogSubTopic = 'door'
             } else {
               dialogSubTopic = 'noMoney';
@@ -385,7 +388,7 @@ export default class GameExteriorScene extends Phaser.Scene {
 
           this.menuOpened = true;
 
-          if (currentObject === 'sign' && heartPu && (!Object.values(inventory.getItems())[0] || (Object.values(inventory.getItems())[0] && Object.values(inventory.getItems())[0].name !== 'heart'))) {
+          if (currentObject === 'sign' && heartPu && (!inventory.checkForItem('heart'))) {
             heartPu.setVisible(true);
           }
 
@@ -442,6 +445,10 @@ export default class GameExteriorScene extends Phaser.Scene {
   addToInventory (pickup) {
     inventory.addItem(pickup);
     pickupsMap[pickup].setVisible(false);
+  }
+
+  removeFromInventory (pickup) {
+    inventory.removeItem(pickup);
   }
 
   enterScene () {

@@ -302,7 +302,38 @@ export default class Dialog extends Phaser.GameObjects.Container {
                 } else if (currentTopic === 'heartResultNo') {
 
                     this.setNextDialog(objectsData, 'npc', currentTopic);
+                } else if (currentTopic === 'flanResultYes') {
 
+                    this.setNextDialog(objectsData, 'npc', currentTopic);
+                } else if (currentTopic === 'flanResultNo') {
+
+                    this.setNextDialog(objectsData, 'npc', currentTopic);
+
+                } else if (currentTopic === 'potResultAddTurnip') {
+
+                    this.scene.removeFromInventory('turnip');
+
+                    this.scene.setPotContents('turnip');
+
+                    this.setNextDialog(objectsData, 'pot', currentTopic);
+
+                } else if (currentTopic === 'potResultAddEgg') {
+
+                    this.scene.removeFromInventory('egg');
+
+                    this.scene.setPotContents('egg');
+
+                    this.setNextDialog(objectsData, 'pot', currentTopic);
+                    
+                } else if (currentTopic === 'mixPot') {
+
+                    this.setNextDialog(objectsData, 'pot', currentTopic);
+                    
+                } else if (currentTopic === 'potResultMixYes') {
+                    this.scene.setPotContents('flan');
+                    this.setNextDialog(objectsData, 'pot', currentTopic);
+                } else if (currentTopic === 'potResultCancel') {
+                    this.setNextDialog(objectsData, 'pot', currentTopic);
                 }
             }
         }
