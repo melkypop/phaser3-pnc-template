@@ -33,6 +33,7 @@ let inventoryData = null;
 let coinsPu = null;
 let heartPu = null;
 let moneyPu = null;
+let turnipPu = null;
 
 let pickupsMap = {};
 let currentPickup = null;
@@ -49,6 +50,7 @@ let doorsData = null;
 
 let currentObject = null;
 let sign = null;
+let shrub = null;
 
 export default class GameExteriorScene extends Phaser.Scene {
   constructor () {
@@ -90,7 +92,12 @@ export default class GameExteriorScene extends Phaser.Scene {
     sign.fillRectShape(signRect);
     sign.setInteractive(signRect, Phaser.Geom.Rectangle.Contains);
 
-    worldContainer = this.add.container(0, 0, [bg, coinsPu, heartPu, moneyPu, npc, door, sign]);
+    let shrubRect = new Phaser.Geom.Rectangle(500, 390, 150, 80);
+    shrub = this.add.graphics({ fillStyle: { color: 0x0000ff, alpha: 0 } });
+    shrub.fillRectShape(shrubRect);
+    shrub.setInteractive(shrubRect, Phaser.Geom.Rectangle.Contains);
+
+    worldContainer = this.add.container(0, 0, [bg, coinsPu, heartPu, moneyPu, turnipPu, npc, door, sign, shrub]);
 
     this.initPlayer();
 
@@ -141,6 +148,24 @@ export default class GameExteriorScene extends Phaser.Scene {
     });
 
     sign.on('pointerout', () => {
+      this.input.setDefaultCursor('');
+    });
+
+    shrub.on('pointerdown', () => {
+      if (inventory.checkForItem('money')) {
+        currentDoor = null;
+        currentObject = 'shrub';
+        currentPickup = null;
+      }
+    });
+
+    shrub.on('pointerover', () => {
+      if (inventory.checkForItem('money')) {
+        this.input.setDefaultCursor('url(src/assets/ui/cursor.png), pointer');
+      }
+    });
+
+    shrub.on('pointerout', () => {
       this.input.setDefaultCursor('');
     });
 
@@ -252,10 +277,23 @@ export default class GameExteriorScene extends Phaser.Scene {
     moneyPu.setOrigin(0, 0);
     moneyPu.setVisible(false);
 
+    this.anims.create({
+      key: 'turnip',
+      frames: this.anims.generateFrameNumbers('food', { frames: [ 2, 3 ] }),
+      frameRate: 8,
+      repeat: -1
+    });
+
+    turnipPu = this.add.sprite(500, 500);
+    turnipPu.setScale(2);
+    turnipPu.play('turnip');
+    turnipPu.setVisible(false);
+
     pickupsMap = {
       'coins': coinsPu,
       'heart': heartPu,
-      'money': moneyPu
+      'money': moneyPu,
+      'turnip': turnipPu
     };
   }
 
@@ -325,12 +363,20 @@ export default class GameExteriorScene extends Phaser.Scene {
         if (currentObject) {
           dialogSubTopic = 'object';
 
-          if (currentObject === 'npc' && Object.values(inventory.getItems())[0] && Object.values(inventory.getItems())[0].name === 'heart') {
-            if (Object.values(inventory.getItems())[1] && Object.values(inventory.getItems())[1].name === 'money') {
-              dialogSubTopic = 'money'
+          if (currentObject === 'npc' && inventory.checkForItem('heart')) {
+            if (inventory.checkForItem('flan')) {
+              dialogSubTopic = 'flan';
+            } else if (inventory.checkForItem('turnip')) {
+              dialogSubTopic = 'hungry';
+            } else if (inventory.checkForItem('money')) {
+              dialogSubTopic = 'money';
             } else {
               dialogSubTopic = 'heart';
             }
+          }
+
+          if (currentObject === 'shrub' && turnipPu && !inventory.checkForItem('turnip')) {
+            turnipPu.setVisible(true);
           }
 
           let { currentQuestionStatement, currentChoices } = dialog.getDialogData(currentObject, dialogSubTopic, 'object');

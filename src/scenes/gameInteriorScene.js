@@ -37,7 +37,8 @@ let currentObject = null;
 
 // food
 let eggPu = null;
-let turnipPu = null;
+let flanPu = null;
+let sushiPu = null;
 
 export default class GameInteriorScene extends Phaser.Scene {
   constructor () {
@@ -211,8 +212,15 @@ export default class GameInteriorScene extends Phaser.Scene {
     });
 
     this.anims.create({
-      key: 'turnip',
-      frames: this.anims.generateFrameNumbers('food', { frames: [ 2, 3 ] }),
+      key: 'flan',
+      frames: this.anims.generateFrameNumbers('food', { frames: [ 8, 9 ] }),
+      frameRate: 8,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: 'sushi',
+      frames: this.anims.generateFrameNumbers('food', { frames: [ 6, 7 ] }),
       frameRate: 8,
       repeat: -1
     });
@@ -221,13 +229,19 @@ export default class GameInteriorScene extends Phaser.Scene {
     eggPu.setScale(2);
     eggPu.play('egg');
 
-    turnipPu = this.add.sprite(480, 320);
-    turnipPu.setScale(2);
-    turnipPu.play('turnip');
+    flanPu = this.add.sprite(680, 420);
+    flanPu.setScale(2);
+    flanPu.play('flan');
+    flanPu.setVisible(false);
+
+    sushiPu = this.add.sprite(480, 320);
+    sushiPu.setScale(2);
+    sushiPu.play('sushi');
 
     pickupsMap = {
       'egg': eggPu,
-      'turnip': turnipPu
+      'flan': flanPu,
+      'sushi': sushiPu
     };
   }
 

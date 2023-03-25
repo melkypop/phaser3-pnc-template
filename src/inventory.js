@@ -93,6 +93,21 @@ export default class Inventory extends Phaser.GameObjects.Container {
         this.scene.add.container(this.x, this.y, this.children);
     }
 
+    checkForItem (name) {
+        let found = false;
+
+        if (this.items && Array.isArray(Object.values(this.items)) && Object.values(this.items).length > 0) {
+            Object.values(this.items).forEach(it => {
+                if (it.name === name) {
+                    found = true;
+                    return found;
+                }
+            })
+        }
+
+        return found;
+    }
+
     addItem (name) {
         if (currentPos === MAX_POS) {
             return;

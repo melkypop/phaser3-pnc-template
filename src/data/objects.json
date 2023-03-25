@@ -53,6 +53,11 @@
 			"statement": "Spread the love."
 		}
 	},
+    "shrub": {
+		"object": {
+			"statement": "<Shake shake shake>"
+		}
+	},
 	"pot": {
 		"object": {
 			"question": "Welcome to the mixing pot! Mix 2 ingredients?",
@@ -87,7 +92,7 @@
 			"statement": "Nah, maybe next time."
         }
 	},
-    "pot_full": {
+    "potFull": {
 		"object": {
 			"question": "The pot is full! Mix it?",
             "choices": [

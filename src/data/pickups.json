@@ -85,7 +85,33 @@
 	},
     "turnip": {
 		"pickup": {
-			"question": "Turnip. Buy for a coin?",
+			"question": "Turnip. Pick up?",
+            "choices": [
+                {
+                    "answer": "Yes",
+                    "nextTopic": "pickupResultYes"
+                },
+                {
+                    "answer": "No",
+                    "nextTopic": "pickupResultNo"
+                }
+            ]
+		},
+        "pickupResultYes": {
+			"statement": "Got it!"
+        },
+        "pickupResultNo": {
+			"statement": "Nah, not interested."
+        }
+	},
+    "sushi": {
+		"pickup": {
+			"statement": "Just here for decoration!"
+		}
+	},
+    "flan": {
+		"pickup": {
+			"question": "Flan. Pick up?",
             "choices": [
                 {
                     "answer": "Yes",
