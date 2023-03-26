@@ -273,6 +273,10 @@ export default class Dialog extends Phaser.GameObjects.Container {
             if (dialogType === 'pickup') {
                 if (currentTopic === 'pickupResultYes') {
                     this.scene.addToInventory(this.scene.getCurrentPickup());
+
+                    if (this.scene.getCurrentPickup() === 'egg') {
+                        this.scene.removeFromInventory('money');
+                    }
                 }
 
                 this.setNextDialog(pickupsData, this.scene.getCurrentPickup(), currentTopic);
@@ -294,6 +298,8 @@ export default class Dialog extends Phaser.GameObjects.Container {
                 if (currentTopic === 'heartResultYes') {
 
                     this.scene.addToInventory('money');
+
+                    this.scene.removeFromInventory('heart');
 
                     this.setNextDialog(objectsData, 'npc', currentTopic);
 

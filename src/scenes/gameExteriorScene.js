@@ -372,14 +372,14 @@ export default class GameExteriorScene extends Phaser.Scene {
         if (currentObject) {
           dialogSubTopic = 'object';
 
-          if (currentObject === 'npc' && inventory.checkForItem('heart')) {
+          if (currentObject === 'npc') {
             if (inventory.checkForItem('flan')) {
               dialogSubTopic = 'flan';
             } else if (inventory.checkForItem('turnip') || potContents.includes('turnip')) {
               dialogSubTopic = 'hungry';
             } else if (inventory.checkForItem('money')) {
               dialogSubTopic = 'money';
-            } else {
+            } else if (inventory.checkForItem('heart')) {
               dialogSubTopic = 'heart';
             }
           }
