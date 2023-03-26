@@ -108,10 +108,10 @@
             ]
         },
         "potResultAddEgg": {
-			"statement": "That was cool!"
+			"statement": "Added an egg to the pot!"
         },
         "potResultAddTurnip": {
-			"statement": "That was cool!"
+			"statement": "Added a turnip to the pot!"
         },
         "potResultMixYes": {
 			"statement": "You made flan!"

@@ -348,8 +348,9 @@ export default class GameInteriorScene extends Phaser.Scene {
             dialogSubTopic = 'mixPot';
           }
 
-          if (potContents.includes('flan') && flanPu && !inventory.checkForItem('flan')) {
+          if (potContents.includes('egg') && potContents.includes('turnip') && !potContents.includes('flan') && flanPu && !inventory.checkForItem('flan')) {
             flanPu.setVisible(true);
+            dialogSubTopic = 'potResultMixYes';
           }
 
           let { currentQuestionStatement, currentChoices } = dialog.getDialogData(currentObject, dialogSubTopic, 'object');
