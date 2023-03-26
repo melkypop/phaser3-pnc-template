@@ -90,7 +90,7 @@ export default class GameInteriorScene extends Phaser.Scene {
     inventory.setSize(264, 77).setInteractive();
 
     // check for egg
-    if ((!inventory.checkForItem('egg') && potContents.includes('egg')) || (!inventory.checkForItem('egg') && !potContents.includes('egg'))) {
+    if (!inventory.checkForItem('egg') && !potContents.includes('egg') && !potContents.includes('flan')) {
       eggPu.setVisible(true);
     } else {
       eggPu.setVisible(false);
@@ -285,6 +285,10 @@ export default class GameInteriorScene extends Phaser.Scene {
     };
   }
 
+  showPickup (name) {
+    pickupsMap[name].setVisible(true);
+  }
+
   initPickupsInteraction (items) {
     let that = this;
 
@@ -348,7 +352,11 @@ export default class GameInteriorScene extends Phaser.Scene {
             dialogSubTopic = 'mixPot';
           }
 
-          if (potContents.includes('egg') && potContents.includes('turnip') && !potContents.includes('flan') && flanPu && !inventory.checkForItem('flan')) {
+          if (potContents.includes('egg') && potContents.includes('turnip') && !potContents.includes('flan') && !inventory.checkForItem('flan')) {
+            dialogSubTopic = 'mixPot';
+          }
+
+          if (potContents.includes('egg') && potContents.includes('turnip') && potContents.includes('flan') && flanPu && !inventory.checkForItem('flan')) {
             flanPu.setVisible(true);
             dialogSubTopic = 'potResultMixYes';
           }
@@ -393,7 +401,7 @@ export default class GameInteriorScene extends Phaser.Scene {
       
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
       this.scene.stop('GameInteriorScene');
-      this.scene.start('GameExteriorScene', { inventory, player, dialog });
+      this.scene.start('GameExteriorScene', { inventory, player, dialog, potContents });
     });
   }
 }

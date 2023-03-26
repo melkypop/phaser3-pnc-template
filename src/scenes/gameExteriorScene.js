@@ -300,6 +300,10 @@ export default class GameExteriorScene extends Phaser.Scene {
     };
   }
 
+  showPickup (name) {
+    pickupsMap[name].setVisible(true);
+  }
+
   initPickupsInteraction (items) {
     let that = this;
 
@@ -371,7 +375,7 @@ export default class GameExteriorScene extends Phaser.Scene {
           if (currentObject === 'npc' && inventory.checkForItem('heart')) {
             if (inventory.checkForItem('flan')) {
               dialogSubTopic = 'flan';
-            } else if (inventory.checkForItem('turnip')) {
+            } else if (inventory.checkForItem('turnip') || potContents.includes('turnip')) {
               dialogSubTopic = 'hungry';
             } else if (inventory.checkForItem('money')) {
               dialogSubTopic = 'money';
@@ -380,7 +384,7 @@ export default class GameExteriorScene extends Phaser.Scene {
             }
           }
 
-          if (currentObject === 'shrub' && turnipPu && !inventory.checkForItem('turnip') && !potContents.includes('turnip')) {
+          if (currentObject === 'shrub' && turnipPu && !inventory.checkForItem('turnip') && !potContents.includes('turnip') && !potContents.includes('flan')) {
             turnipPu.setVisible(true);
           }
 
@@ -458,7 +462,7 @@ export default class GameExteriorScene extends Phaser.Scene {
       
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
       this.scene.stop('GameExteriorScene');
-      this.scene.start('GameInteriorScene', { inventory, player, dialog });
+      this.scene.start('GameInteriorScene', { inventory, player, dialog, potContents });
     });
   }
 

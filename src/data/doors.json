@@ -1,7 +1,7 @@
 {
 	"cafe": {
         "noMoney": {
-            "statement": "...but I have no money!"
+            "statement": "I wanna go in, but I have no money!"
         },
 		"door": {
 			"question": "Cafe open! Enter?",

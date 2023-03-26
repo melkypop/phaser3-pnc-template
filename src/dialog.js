@@ -47,12 +47,6 @@ export default class Dialog extends Phaser.GameObjects.Container {
             'object': objectsData
         }
 
-        // if (!dType && subTopic.toLowerCase().indexOf('pickup') !== -1) {
-        //     dType = 'pickup';
-        // } else {
-        //     dType = 'door';
-        // }
-
         if (!dType) {
             if (subTopic.indexOf('pickup') !== -1) {
                 dType = 'pickup';
@@ -229,9 +223,11 @@ export default class Dialog extends Phaser.GameObjects.Container {
         });
         choiceBtn1.on('pointerover', (event, gameObjects) => {
             choiceTF1.setFill(0xfa8b66);
+            that.scene.input.manager.canvas.style.cursor = 'pointer';
         });
         choiceBtn1.on('pointerout', (event, gameObjects) => {
             choiceTF1.setFill(0x483c32);
+            that.scene.input.manager.canvas.style.cursor = '';
         });
 
         let choiceBtn2 = this.scene.add.graphics();
@@ -257,9 +253,11 @@ export default class Dialog extends Phaser.GameObjects.Container {
         });
         choiceBtn2.on('pointerover', (event, gameObjects) => {
             choiceTF2.setFill(0xfa8b66);
+            that.scene.input.manager.canvas.style.cursor = 'pointer';
         });
         choiceBtn2.on('pointerout', (event, gameObjects) => {
             choiceTF1.setFill(0x483c32);
+            that.scene.input.manager.canvas.style.cursor = '';
         });
 
         this.children = [questionStatement, choiceBtn1, choiceBtn2, questionStatementTF, ...choiceTFs];
@@ -305,6 +303,8 @@ export default class Dialog extends Phaser.GameObjects.Container {
                     
                 } else if (currentTopic === 'flanResultYes') {
 
+                    this.scene.removeFromInventory('flan');
+
                     this.setNextDialog(objectsData, 'npc', currentTopic);
 
                 } else if (currentTopic === 'flanResultNo') {
@@ -334,6 +334,8 @@ export default class Dialog extends Phaser.GameObjects.Container {
                 } else if (currentTopic === 'potResultMixYes') {
 
                     this.scene.setPotContents('flan');
+
+                    this.scene.showPickup('flan');
 
                     this.setNextDialog(objectsData, 'pot', currentTopic);
 
