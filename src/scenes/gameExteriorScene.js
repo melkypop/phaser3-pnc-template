@@ -333,6 +333,8 @@ export default class GameExteriorScene extends Phaser.Scene {
 
         if (player.x > 600) {
           dialogX = player.x - 150;
+        } else if (player.x < 360) {
+          dialogX = player.x + 100;
         }
 
         if (currentPickup) {
@@ -378,7 +380,7 @@ export default class GameExteriorScene extends Phaser.Scene {
             }
           }
 
-          if (currentObject === 'shrub' && turnipPu && !inventory.checkForItem('turnip')) {
+          if (currentObject === 'shrub' && turnipPu && !inventory.checkForItem('turnip') && !potContents.includes('turnip')) {
             turnipPu.setVisible(true);
           }
 

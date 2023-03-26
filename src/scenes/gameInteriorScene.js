@@ -89,6 +89,13 @@ export default class GameInteriorScene extends Phaser.Scene {
     inventory.setUI();
     inventory.setSize(264, 77).setInteractive();
 
+    // check for egg
+    if ((!inventory.checkForItem('egg') && potContents.includes('egg')) || (!inventory.checkForItem('egg') && !potContents.includes('egg'))) {
+      eggPu.setVisible(true);
+    } else {
+      eggPu.setVisible(false);
+    }
+
     this.initInventoryTween();
 
     this.initPickupsInteraction(Object.keys(pickupsMap));
@@ -337,18 +344,13 @@ export default class GameInteriorScene extends Phaser.Scene {
             dialogSubTopic = 'addEgg';
           }
 
-          console.log('potContents = ' , potContents)
-          console.log('currentObject = ' , currentObject)
-          console.log('dialogSubTopic = ' , dialogSubTopic)
-
-          if (potContents.includes('egg') && potContents.includes('turnip')) {
+          if (potContents.includes('egg') && potContents.includes('turnip') && !potContents.includes('flan')) {
             dialogSubTopic = 'mixPot';
           }
 
           if (potContents.includes('flan') && flanPu && !inventory.checkForItem('flan')) {
             flanPu.setVisible(true);
           }
-         
 
           let { currentQuestionStatement, currentChoices } = dialog.getDialogData(currentObject, dialogSubTopic, 'object');
 
