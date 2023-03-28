@@ -4,7 +4,6 @@ import MenuMainScene from './scenes/menuMainScene.js';
 import GameExteriorScene from './scenes/gameExteriorScene.js';
 import GameInteriorScene from './scenes/gameInteriorScene.js';
 import GameExteriorNightScene from './scenes/gameExteriorNightScene.js';
-import MenuGameOverScene from './scenes/menuGameOverScene.js';
 
 const config = {
     type: Phaser.WEBGL,
@@ -21,7 +20,7 @@ const config = {
         }
     },
     antialias: true,
-    scene: [ PreloadScene, MenuMainScene, GameExteriorScene, GameInteriorScene, GameExteriorNightScene, MenuGameOverScene ]
+    scene: [ PreloadScene, MenuMainScene, GameExteriorScene, GameInteriorScene, GameExteriorNightScene ]
 };
 
 const game = new Phaser.Game(config);
