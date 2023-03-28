@@ -25,7 +25,7 @@ export default class PreloadScene extends Phaser.Scene {
     }
 
     preload () {
-        this.load.audio('music', ['../src/assets/sounds/migfus20_music.mp3', '../src/assets/sounds/migfus20_music.ogg']);
+        this.load.audio('music', ['migfus20_music.mp3', 'migfus20_music.ogg']);
     
         this.load.image('bg', bg);
         this.load.image('bgNight', bgNight);

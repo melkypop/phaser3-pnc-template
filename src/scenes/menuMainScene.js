@@ -23,7 +23,7 @@ export default class MenuMainScene extends Phaser.Scene {
             this.scene.start('GameExteriorScene');
         });
 
-        let tfCredits = this.add.text(70, 240, 'Dev by @melkypop \nArt by @florassence | Music by @Migfus20', {
+        let tfCredits = this.add.text(70, 240, 'Dev by @melkypop \nArt by @florassence | Music by Migfus20', {
             font: "13px Courier New",
             fill: "#483c32",
             align: "center",
