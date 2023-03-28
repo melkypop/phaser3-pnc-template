@@ -46,6 +46,35 @@
         },
         "flanResultNo": {
             "statement": "Awww..."
+        },
+        "night": {
+            "question": "It is now night. The Dark Side. Get it?",
+            "choices": [
+                {
+                    "answer": "Uh...",
+                    "nextTopic": "nightNext1"
+                },
+                {
+                    "answer": "...",
+                    "nextTopic": "nightNext1"
+                }
+            ]
+        },
+        "nightNext1": {
+            "question": "The Dark Side is the game jam's theme.",
+            "choices": [
+                {
+                    "answer": "Uh...",
+                    "nextTopic": "nightNext2"
+                },
+                {
+                    "answer": "...",
+                    "nextTopic": "nightNext2"
+                }
+            ]
+        },
+        "nightNext2": {
+            "statement": "Thanks for playing! <The End>"
         }
 	},
 	"sign": {
@@ -77,7 +106,7 @@
                 },
                 {
                     "answer": "No",
-                    "nextTopic": "pot"
+                    "nextTopic": "object"
                 }
             ]
         },
@@ -90,7 +119,7 @@
                 },
                 {
                     "answer": "No",
-                    "nextTopic": "pot"
+                    "nextTopic": "object"
                 }
             ]
         },
@@ -103,7 +132,7 @@
                 },
                 {
                     "answer": "No",
-                    "nextTopic": "pot"
+                    "nextTopic": "object"
                 }
             ]
         },

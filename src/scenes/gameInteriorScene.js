@@ -387,6 +387,10 @@ export default class GameInteriorScene extends Phaser.Scene {
     return currentDoor;
   }
 
+  getCurrentObject () {
+    return currentObject;
+  }
+
   addToInventory (pickup) {
     inventory.addItem(pickup);
     pickupsMap[pickup].setVisible(false);

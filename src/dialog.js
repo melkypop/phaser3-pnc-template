@@ -295,6 +295,7 @@ export default class Dialog extends Phaser.GameObjects.Container {
             }
 
             if (dialogType === 'object') {
+
                 if (currentTopic === 'heartResultYes') {
 
                     this.scene.addToInventory('money');
@@ -312,6 +313,11 @@ export default class Dialog extends Phaser.GameObjects.Container {
                     this.scene.removeFromInventory('flan');
 
                     this.setNextDialog(objectsData, 'npc', currentTopic);
+
+                    setTimeout(() => {
+                        this.destroyDialog();
+                        this.scene.enterNightScene();
+                    }, 800);
 
                 } else if (currentTopic === 'flanResultNo') {
 
@@ -345,9 +351,9 @@ export default class Dialog extends Phaser.GameObjects.Container {
 
                     this.setNextDialog(objectsData, 'pot', currentTopic);
 
-                } else if (currentTopic === 'potResultCancel') {
+                } else {
 
-                    this.setNextDialog(objectsData, 'pot', currentTopic);
+                    this.setNextDialog(objectsData, this.scene.getCurrentObject(), currentTopic);
 
                 }
             }

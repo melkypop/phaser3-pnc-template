@@ -1,4 +1,5 @@
 import bg from '../assets/bg/bg.png';
+import bgNight from '../assets/bg/bgNight.png';
 import bgInterior from '../assets/bg/bg-interior2.png';
 import player from '../assets/sprites/BearSprites.png';
 import food from '../assets/sprites/FoodSprites2.png';
@@ -25,6 +26,7 @@ export default class PreloadScene extends Phaser.Scene {
 
     preload () {
         this.load.image('bg', bg);
+        this.load.image('bgNight', bgNight);
         this.load.image('bgInterior', bgInterior);
         this.load.spritesheet('player', player, { frameWidth: 32, frameHeight: 32, startFrame: 0, endFrame: 10 });
         this.load.spritesheet('food', food, { frameWidth: 32, frameHeight: 32, startFrame: 0, endFrame: 10 });

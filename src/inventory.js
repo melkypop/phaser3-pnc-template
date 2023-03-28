@@ -12,8 +12,8 @@ let items = {
     0: { x: 12, y: 10, count: 0, name: '' },
     1: { x: 52, y: 10, count: 0, name: '' },
     2: { x: 92, y: 10, count: 0, name: '' },
-    3: { x: 132, y: 10, count: 0, name: '' },
-    4: { x: 172, y: 10, count: 0, name: '' },
+    3: { x: 130, y: 10, count: 0, name: '' },
+    4: { x: 170, y: 10, count: 0, name: '' },
     5: { x: 212, y: 10, count: 0, name: '' }
 };
 

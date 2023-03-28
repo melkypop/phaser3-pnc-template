@@ -448,6 +448,10 @@ export default class GameExteriorScene extends Phaser.Scene {
     return currentDoor;
   }
 
+  getCurrentObject () {
+    return currentObject;
+  }
+
   addToInventory (pickup) {
     inventory.addItem(pickup);
     pickupsMap[pickup].setVisible(false);
@@ -463,6 +467,15 @@ export default class GameExteriorScene extends Phaser.Scene {
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
       this.scene.stop('GameExteriorScene');
       this.scene.start('GameInteriorScene', { inventory, player, dialog, potContents });
+    });
+  }
+
+  enterNightScene () {
+    this.cameras.main.fadeOut(800, 0, 0, 0);
+      
+    this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
+      this.scene.stop('GameExteriorScene');
+      this.scene.start('GameExteriorNightScene');
     });
   }
 
